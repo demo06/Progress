@@ -3,7 +3,6 @@ package funny.buildapp.progress.ui.page.home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,7 +12,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowRight
-import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
@@ -31,22 +29,25 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.google.accompanist.placeholder.material.placeholder
-import com.google.accompanist.placeholder.placeholder
-import funny.buildapp.progress.ui.theme.green
+import funny.buildapp.progress.ui.page.route.Route
+import funny.buildapp.progress.ui.page.route.RouteUtils
+import funny.buildapp.progress.ui.theme.themeColor
+import funny.buildapp.progress.widgets.clickWithoutWave
 
 @Composable
 fun HomePage(navCtrl: NavHostController) {
     LazyColumn(
         Modifier
             .fillMaxSize()
-            .background(Brush.linearGradient(listOf(green.copy(0.2f), Color.White)))
+            .background(Brush.linearGradient(listOf(themeColor.copy(0.2f), Color.White)))
     ) {
         items(10) {
             ProgressCard(
                 progress = 27.7f,
                 title = "完全版四级考纲词汇（乱序）",
                 status = "",
-                proportion = "1708/6145"
+                proportion = "1708/6145",
+                onClick = { RouteUtils.navTo(navCtrl, Route.DETAIL) }
             )
         }
     }
@@ -57,7 +58,8 @@ fun ProgressCard(
     progress: Float = 0.0f,
     title: String = "",
     status: String = "",
-    proportion: String = "0/0"
+    proportion: String = "0/0",
+    onClick: () -> Unit = {}
 ) {
     val isShowPlaceHolder by remember {
         mutableStateOf(false)
@@ -67,6 +69,7 @@ fun ProgressCard(
             .padding(vertical = 4.dp, horizontal = 8.dp)
             .fillMaxWidth()
             .background(Color.White, RoundedCornerShape(8.dp))
+            .clickWithoutWave { onClick() }
             .padding(12.dp)
     ) {
         Row(
@@ -90,7 +93,7 @@ fun ProgressCard(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "已学$progress%", fontSize = 12.sp)
+            Text(text = "完成$progress%", fontSize = 12.sp)
             Text(text = proportion, fontSize = 12.sp, color = Color.Gray)
         }
         Spacer(modifier = Modifier.padding(2.dp))
@@ -100,8 +103,8 @@ fun ProgressCard(
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(8.dp))
                 .placeholder(isShowPlaceHolder),
-            color = green,
-            trackColor = green.copy(0.2f)
+            color = themeColor,
+            trackColor = themeColor.copy(0.2f)
         )
     }
 }

@@ -1,60 +1,207 @@
 package funny.buildapp.progress.ui.theme
 
-import android.app.Activity
-import android.os.Build
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
-import androidx.compose.material3.lightColorScheme
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.TweenSpec
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
-import androidx.core.view.WindowCompat
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
+import com.google.accompanist.insets.ProvideWindowInsets
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
-private val DarkColorScheme = darkColorScheme(
-    primary = green,
-    secondary = green.copy(alpha = 0.6f),
-    tertiary = green.copy(alpha = 0.4f)
+
+//夜色主题
+private val DarkColorPalette = AppColors(
+    themeUi = themeColor,
+    background = backgroundColor,
+    listItem = black3,
+    divider = backgroundColor,
+    textPrimary = white4,
+    textSecondary = grey1,
+    textThird = white,
+    mainColor = white,
+    card = white,
+    icon = grey1,
+    info = info,
+    warn = warn,
+    success = green3,
+    error = red2,
+    primaryBtnBg = black1,
+    secondBtnBg = white1,
+    hot = red,
+    placeholder = grey1,
+    golden = orange1,
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = green,
-    secondary = green.copy(alpha = 0.6f),
-    tertiary = green.copy(alpha = 0.4f),
+//白天主题
+private val LightColorPalette = AppColors(
+    themeUi = themeColor,
+    background = backgroundColor,
+    listItem = white,
+    divider = backgroundColor,
+    textPrimary = black3,
+    textSecondary = grey1,
+    textThird = white,
+    mainColor = white,
+    card = white,
+    icon = grey1,
+    info = info,
+    warn = warn,
+    success = green3,
+    error = red2,
+    primaryBtnBg = themeColor,
+    secondBtnBg = white3,
+    hot = red,
+    placeholder = white3,
+    golden = orange1,
 )
+var LocalAppColors = compositionLocalOf {
+    LightColorPalette
+}
+
+@Stable
+object AppTheme {
+    val colors: AppColors
+        @Composable
+        get() = LocalAppColors.current
+
+    enum class Theme {
+        Light, Dark
+    }
+}
+
+@Stable
+class AppColors(
+    themeUi: Color,
+    background: Color,
+    listItem: Color,
+    divider: Color,
+    textPrimary: Color,
+    textSecondary: Color,
+    textThird: Color,
+    mainColor: Color,
+    card: Color,
+    icon: Color,
+    info: Color,
+    warn: Color,
+    success: Color,
+    error: Color,
+    primaryBtnBg: Color,
+    secondBtnBg: Color,
+    hot: Color,
+    placeholder: Color,
+    golden: Color,
+) {
+    var themeUi: Color by mutableStateOf(themeUi)
+        internal set
+    var background: Color by mutableStateOf(background)
+        private set
+    var listItem: Color by mutableStateOf(listItem)
+        private set
+    var divider: Color by mutableStateOf(divider)
+        private set
+    var textPrimary: Color by mutableStateOf(textPrimary)
+        internal set
+    var textSecondary: Color by mutableStateOf(textSecondary)
+        private set
+    var textThird: Color by mutableStateOf(textThird)
+        private set
+    var mainColor: Color by mutableStateOf(mainColor)
+        internal set
+    var card: Color by mutableStateOf(card)
+        private set
+    var icon: Color by mutableStateOf(icon)
+        private set
+    var info: Color by mutableStateOf(info)
+        private set
+    var warn: Color by mutableStateOf(warn)
+        private set
+    var success: Color by mutableStateOf(success)
+        private set
+    var error: Color by mutableStateOf(error)
+        private set
+    var primaryBtnBg: Color by mutableStateOf(primaryBtnBg)
+        internal set
+    var secondBtnBg: Color by mutableStateOf(secondBtnBg)
+        private set
+    var hot: Color by mutableStateOf(hot)
+        private set
+    var placeholder: Color by mutableStateOf(placeholder)
+        private set
+    var golden: Color by mutableStateOf(golden)
+        private set
+
+}
+
 
 @Composable
-fun ProgressTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+fun AppTheme(
+    theme: AppTheme.Theme = AppTheme.Theme.Light,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+
+    val targetColors = when (theme) {
+        AppTheme.Theme.Light -> {
+            LightColorPalette.themeUi = themeColor
+            LightColorPalette.primaryBtnBg = themeColor
+            LightColorPalette
         }
 
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
-    val view = LocalView.current
-    if (!view.isInEditMode) {
-        SideEffect {
-            val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
-        }
+        AppTheme.Theme.Dark -> DarkColorPalette
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
+    val themeUi = animateColorAsState(targetColors.themeUi, TweenSpec(600))
+    val background = animateColorAsState(targetColors.background, TweenSpec(600))
+    val listItem = animateColorAsState(targetColors.listItem, TweenSpec(600))
+    val divider = animateColorAsState(targetColors.divider, TweenSpec(600))
+    val textPrimary = animateColorAsState(targetColors.textPrimary, TweenSpec(600))
+    val textSecondary = animateColorAsState(targetColors.textSecondary, TweenSpec(600))
+    val textThird = animateColorAsState(targetColors.textThird, TweenSpec(600))
+    val mainColor = animateColorAsState(targetColors.mainColor, TweenSpec(600))
+    val card = animateColorAsState(targetColors.card, TweenSpec(600))
+    val icon = animateColorAsState(targetColors.icon, TweenSpec(600))
+    val info = animateColorAsState(targetColors.info, TweenSpec(600))
+    val warn = animateColorAsState(targetColors.warn, TweenSpec(600))
+    val success = animateColorAsState(targetColors.success, TweenSpec(600))
+    val error = animateColorAsState(targetColors.error, TweenSpec(600))
+    val primaryBtnBg = animateColorAsState(targetColors.primaryBtnBg, TweenSpec(600))
+    val secondBtnBg = animateColorAsState(targetColors.secondBtnBg, TweenSpec(600))
+    val hot = animateColorAsState(targetColors.hot, TweenSpec(600))
+    val placeholder = animateColorAsState(targetColors.placeholder, TweenSpec(600))
+    val golden = animateColorAsState(targetColors.golden, TweenSpec(600))
+    val appColors = AppColors(
+        themeUi = themeUi.value,
+        background = background.value,
+        listItem = listItem.value,
+        divider = divider.value,
+        textPrimary = textPrimary.value,
+        textSecondary = textSecondary.value,
+        textThird = textThird.value,
+        mainColor = mainColor.value,
+        card = card.value,
+        icon = icon.value,
+        primaryBtnBg = primaryBtnBg.value,
+        secondBtnBg = secondBtnBg.value,
+        info = info.value,
+        warn = warn.value,
+        success = success.value,
+        error = error.value,
+        hot = hot.value,
+        placeholder = placeholder.value,
+        golden = golden.value
     )
+
+    val systemUiCtrl = rememberSystemUiController()
+    systemUiCtrl.setStatusBarColor(appColors.themeUi)
+    systemUiCtrl.setNavigationBarColor(appColors.themeUi)
+    systemUiCtrl.setSystemBarsColor(appColors.themeUi)
+
+    ProvideWindowInsets {
+        CompositionLocalProvider(LocalAppColors provides appColors, content = content)
+    }
+
 }

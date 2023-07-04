@@ -19,7 +19,7 @@ import androidx.navigation.compose.rememberNavController
 import funny.buildapp.progress.ui.page.route.AppNav
 import funny.buildapp.progress.ui.page.route.Route
 import funny.buildapp.progress.ui.page.route.RouteUtils
-import funny.buildapp.progress.ui.theme.green
+import funny.buildapp.progress.ui.theme.themeColor
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,7 +37,7 @@ fun AppScaffold() {
         floatingActionButton = {
             if (currentDestination?.route == Route.HOME) {
                 FloatingActionButton(
-                    containerColor = green,
+                    containerColor = themeColor,
                     onClick = { RouteUtils.navTo(navCtrl, Route.NEW_TASK) }
                 ) {
                     Icon(
