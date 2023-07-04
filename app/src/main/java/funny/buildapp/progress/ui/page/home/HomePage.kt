@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,13 +26,25 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.placeholder.material.placeholder
 import funny.buildapp.progress.ui.page.route.Route
 import funny.buildapp.progress.ui.page.route.RouteUtils
+import funny.buildapp.progress.ui.theme.AppTheme
+import funny.buildapp.progress.ui.theme.H1
+import funny.buildapp.progress.ui.theme.H2
+import funny.buildapp.progress.ui.theme.H3
+import funny.buildapp.progress.ui.theme.H6
+import funny.buildapp.progress.ui.theme.ToolBarHeight
+import funny.buildapp.progress.ui.theme.backgroundGradient
 import funny.buildapp.progress.ui.theme.themeColor
+import funny.buildapp.progress.widgets.AppToolsBar
+import funny.buildapp.progress.widgets.TextContent
+import funny.buildapp.progress.widgets.Title
 import funny.buildapp.progress.widgets.clickWithoutWave
 
 @Composable
@@ -39,8 +52,11 @@ fun HomePage(navCtrl: NavHostController) {
     LazyColumn(
         Modifier
             .fillMaxSize()
-            .background(Brush.linearGradient(listOf(themeColor.copy(0.2f), Color.White)))
+            .background(backgroundGradient)
     ) {
+        item {
+            HomeToolBar(title = "全部目标")
+        }
         items(10) {
             ProgressCard(
                 progress = 27.7f,
@@ -50,6 +66,26 @@ fun HomePage(navCtrl: NavHostController) {
                 onClick = { RouteUtils.navTo(navCtrl, Route.DETAIL) }
             )
         }
+    }
+}
+
+@Composable
+fun HomeToolBar(title: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(ToolBarHeight + 40.dp),
+    ) {
+        Text(
+            text = title,
+            fontSize = H3,
+            color = AppTheme.colors.themeUi,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 16.dp)
+                .align(Alignment.CenterVertically)
+        )
     }
 }
 
@@ -107,4 +143,10 @@ fun ProgressCard(
             trackColor = themeColor.copy(0.2f)
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun HomePagePreview() {
+    HomePage(navCtrl = rememberNavController())
 }

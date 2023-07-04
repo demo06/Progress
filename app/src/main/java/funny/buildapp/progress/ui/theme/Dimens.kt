@@ -1,5 +1,7 @@
 package funny.buildapp.progress.ui.theme
 
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -30,3 +32,5 @@ val PaddingBorder = 12.dp
 val cardCorner = 5.dp   //卡片的圆角
 val buttonCorner = 3.dp //按钮的圆角
 val buttonHeight = 36.dp //按钮的高度
+
+val backgroundGradient= Brush.linearGradient(listOf(themeColor.copy(0.2f), Color.White))

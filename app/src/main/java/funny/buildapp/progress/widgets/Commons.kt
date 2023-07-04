@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -48,6 +49,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -55,10 +57,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.AsyncImage
 import funny.buildapp.progress.ui.theme.AppTheme
 import funny.buildapp.progress.ui.theme.H5
@@ -66,20 +64,12 @@ import funny.buildapp.progress.ui.theme.H6
 import funny.buildapp.progress.ui.theme.PaddingBorder
 import funny.buildapp.progress.ui.theme.ToolBarHeight
 import funny.buildapp.progress.ui.theme.ToolBarTitleSize
-import funny.buildapp.progress.ui.theme.backgroundColor
 import funny.buildapp.progress.ui.theme.black1
-import funny.buildapp.progress.ui.theme.blue
-import funny.buildapp.progress.ui.theme.cyan
-import funny.buildapp.progress.ui.theme.green1
-import funny.buildapp.progress.ui.theme.green3
 import funny.buildapp.progress.ui.theme.grey1
 import funny.buildapp.progress.ui.theme.orange
 import funny.buildapp.progress.ui.theme.orange1
-import funny.buildapp.progress.ui.theme.red
 import funny.buildapp.progress.ui.theme.themeColor
 import funny.buildapp.progress.ui.theme.white
-import funny.buildapp.progress.ui.theme.yellow
-import funny.buildapp.progress.ui.theme.yellow1
 
 
 data class TabTitle(
@@ -100,12 +90,14 @@ fun AppToolsBar(
     onBack: (() -> Unit)? = null,
     onRightClick: (() -> Unit)? = null,
     imageVector: ImageVector? = null,
+    tint: Color = AppTheme.colors.mainColor,
+    backgroundColor: Color = AppTheme.colors.themeUi,
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(ToolBarHeight)
-            .background(AppTheme.colors.themeUi)
+            .background(backgroundColor)
     ) {
         Row(modifier = Modifier.fillMaxSize()) {
             if (onBack != null) {
@@ -116,14 +108,14 @@ fun AppToolsBar(
                         .clickable(onClick = onBack)
                         .align(Alignment.CenterVertically)
                         .padding(12.dp),
-                    tint = AppTheme.colors.mainColor
+                    tint = tint
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
             if (!rightText.isNullOrEmpty() && imageVector == null) {
                 TextContent(
                     text = rightText,
-                    color = AppTheme.colors.mainColor,
+                    color = tint,
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
                         .padding(horizontal = 20.dp)
@@ -135,7 +127,7 @@ fun AppToolsBar(
                 Icon(
                     imageVector = imageVector,
                     contentDescription = null,
-                    tint = AppTheme.colors.mainColor,
+                    tint = tint,
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
                         .padding(end = 12.dp)
@@ -149,10 +141,10 @@ fun AppToolsBar(
             modifier = Modifier
                 .align(Alignment.Center)
                 .padding(horizontal = 40.dp),
-            color = AppTheme.colors.mainColor,
+            color = tint,
             textAlign = TextAlign.Center,
             fontSize = if (title.length > 14) H5 else ToolBarTitleSize,
-            fontWeight = FontWeight.W500,
+            fontWeight = Bold,
             maxLines = 1
         )
 
@@ -254,6 +246,23 @@ fun OutLineEdit(
 
 
 @Composable
+fun RoundCard(content: @Composable ColumnScope.() -> Unit) {
+    Column(
+        Modifier
+            .padding(vertical = 4.dp, horizontal = 8.dp)
+            .fillMaxWidth()
+            .background(Color.White, RoundedCornerShape(8.dp))
+            .clickWithoutWave { }
+            .padding(12.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        content()
+    }
+}
+
+
+@Composable
 fun FillWidthButton(
     modifier: Modifier = Modifier,
     text: String,
@@ -306,39 +315,6 @@ fun HeadAvatar(
         }
 
     }
-}
-
-
-@Composable
-fun LevelLabel(
-    modifier: Modifier = Modifier,
-    title: String,
-    level: Int = 1,
-    textColor: Color = white
-) {
-    val colors = when (level) {
-        1 -> listOf(blue.copy(alpha = 0.5f), themeColor.copy(alpha = 0.5f))
-        2 -> listOf(themeColor, cyan)
-        3 -> listOf(green1, green3)
-        4 -> listOf(green1, yellow1)
-        5 -> listOf(yellow, orange)
-        6 -> listOf(orange, red)
-        else -> {
-            listOf(blue.copy(alpha = 0.5f), themeColor.copy(alpha = 0.5f))
-        }
-    }
-    Text(
-        text = title,
-        fontWeight = FontWeight.Bold,
-        color = textColor,
-        fontSize = 12.sp,
-        modifier = modifier
-            .background(
-                Brush.linearGradient(colors),
-                RoundedCornerShape(4.dp)
-            )
-            .padding(horizontal = 8.dp)
-    )
 }
 
 
@@ -524,15 +500,7 @@ fun CommonPreview() {
     Column {
         AppToolsBar(title = "标题", rightText = "rightText")
         HeadAvatar {}
-        LevelLabel(title = "Lv0.开拓者", level = 0)
-        LevelLabel(title = "Lv1.新移民", level = 1)
-        LevelLabel(title = "Lv2.荒诞时代", level = 2)
-        LevelLabel(title = "Lv3.自由与和平", level = 3)
-        LevelLabel(title = "Lv4.香蕉公司", level = 4)
-        LevelLabel(title = "Lv5.羊皮卷的秘密", level = 5)
-        LevelLabel(title = "Lv6.百年孤独", level = 6)
         FillWidthEdit(text = "", hint = "请输入内容", onTextChange = {})
-
         KingKongItem(
             modifier = Modifier.size(32.dp),
             imageVector = Icons.Outlined.Sailing,
