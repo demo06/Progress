@@ -1,5 +1,6 @@
 package funny.buildapp.progress.widgets
 
+import android.widget.DatePicker
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -27,7 +28,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Sailing
 import androidx.compose.material3.Button
+import androidx.compose.material3.DatePicker
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
@@ -35,7 +39,9 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -70,6 +76,9 @@ import funny.buildapp.progress.ui.theme.orange
 import funny.buildapp.progress.ui.theme.orange1
 import funny.buildapp.progress.ui.theme.themeColor
 import funny.buildapp.progress.ui.theme.white
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 data class TabTitle(
@@ -489,6 +498,64 @@ fun <T> LazyListScope.gridItems(
                 }
             }
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MyDatePicker(
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit
+) {
+    val datePickerState = rememberDatePickerState()
+    val confirmEnabled by remember {
+        derivedStateOf { datePickerState.selectedDateMillis != null }
+    }
+    DatePickerDialog(
+        onDismissRequest = { onDismiss() },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onDismiss()
+                    onConfirm.invoke(
+                        datePickerState.selectedDateMillis?.let {
+                            val date = Date(it)
+                            val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                            format.format(date)
+                        } ?: ""
+                    )
+                },
+                enabled = confirmEnabled
+            ) {
+                Text(
+                    "OK",
+                    color = if (confirmEnabled) AppTheme.colors.themeUi else AppTheme.colors.textSecondary
+                )
+            }
+        },
+        colors = DatePickerDefaults.colors(
+            containerColor = AppTheme.colors.background,
+        ),
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    onDismiss()
+                }
+            ) {
+                Text("Cancel", color = AppTheme.colors.themeUi)
+            }
+        }
+    ) {
+        DatePicker(
+            state = datePickerState,
+            colors = DatePickerDefaults.colors(
+                currentYearContentColor = AppTheme.colors.themeUi,
+                selectedYearContainerColor = AppTheme.colors.themeUi,
+                selectedDayContainerColor = AppTheme.colors.themeUi,
+                todayContentColor = AppTheme.colors.themeUi.copy(0.8f),
+                todayDateBorderColor = AppTheme.colors.themeUi.copy(0.8f),
+            )
+        )
     }
 }
 

@@ -121,7 +121,16 @@ fun ProgressCard(
                 Icon(Icons.Rounded.ArrowRight, contentDescription = "")
             }
         }
-        Spacer(modifier = Modifier.padding(8.dp))
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .placeholder(isShowPlaceHolder),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = "0", fontSize = 12.sp, color = Color.Red)
+            Text(text = "天后结束", fontSize = 12.sp, color = Color.Gray)
+        }
         Row(
             Modifier
                 .fillMaxWidth()
