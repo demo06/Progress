@@ -25,7 +25,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Sailing
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
@@ -63,13 +65,21 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.AsyncImage
+import funny.buildapp.progress.ui.page.route.BottomNavRoute
+import funny.buildapp.progress.ui.page.route.Route
+import funny.buildapp.progress.ui.page.route.RouteUtils
 import funny.buildapp.progress.ui.theme.AppTheme
 import funny.buildapp.progress.ui.theme.H5
 import funny.buildapp.progress.ui.theme.H6
 import funny.buildapp.progress.ui.theme.PaddingBorder
 import funny.buildapp.progress.ui.theme.ToolBarHeight
 import funny.buildapp.progress.ui.theme.ToolBarTitleSize
+import funny.buildapp.progress.ui.theme.backgroundColor
 import funny.buildapp.progress.ui.theme.black1
 import funny.buildapp.progress.ui.theme.grey1
 import funny.buildapp.progress.ui.theme.orange
@@ -176,8 +186,8 @@ fun BackIcon(modifier: Modifier = Modifier, onBack: () -> Unit) {
 fun NavigationItem(
     modifier: Modifier = Modifier,
     title: String,
-    normalIcon: Int,
-    pressedIcon: Int,
+    normalIcon: ImageVector,
+    pressedIcon: ImageVector,
     isSelected: Boolean,
     onClick: () -> Unit = {}
 ) {
@@ -191,7 +201,7 @@ fun NavigationItem(
         Icon(
             modifier = Modifier
                 .size(24.dp),
-            painter = painterResource(id = if (isSelected) pressedIcon else normalIcon),
+            imageVector = if (isSelected) pressedIcon else normalIcon,
             contentDescription = "icon",
             tint = if (isSelected) themeColor else Color.Gray
         )
@@ -548,6 +558,7 @@ fun MyDatePicker(
     ) {
         DatePicker(
             state = datePickerState,
+            showModeToggle = false,
             colors = DatePickerDefaults.colors(
                 currentYearContentColor = AppTheme.colors.themeUi,
                 selectedYearContainerColor = AppTheme.colors.themeUi,
@@ -559,6 +570,44 @@ fun MyDatePicker(
     }
 }
 
+
+@Composable
+fun BottomBar(navCtrl: NavHostController) {
+    val bottomNavList = listOf(BottomNavRoute.Home, BottomNavRoute.Task, BottomNavRoute.Schedule)
+    Column {
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(1.dp)
+                .background(backgroundColor)
+        )
+        Row(Modifier.fillMaxWidth()) {
+            val navBackStackEntry by navCtrl.currentBackStackEntryAsState()
+            val currentDestination = navBackStackEntry?.destination
+            bottomNavList.forEach { screen ->
+                NavigationItem(
+                    modifier = Modifier.weight(1f),
+                    title = screen.title,
+                    normalIcon = screen.normalIcon,
+                    pressedIcon = screen.pressIcon,
+                    isSelected = currentDestination?.hierarchy?.any { it.route == screen.routeName } == true,
+                    onClick = {
+                        if (currentDestination?.route != screen.routeName) {
+                            navCtrl.navigate(screen.routeName) {
+                                popUpTo(navCtrl.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
+                    }
+                )
+            }
+        }
+    }
+
+}
 
 @Preview
 @Composable

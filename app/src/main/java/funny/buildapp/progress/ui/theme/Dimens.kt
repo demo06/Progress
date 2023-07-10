@@ -33,4 +33,5 @@ val cardCorner = 5.dp   //卡片的圆角
 val buttonCorner = 3.dp //按钮的圆角
 val buttonHeight = 36.dp //按钮的高度
 
-val backgroundGradient= Brush.linearGradient(listOf(themeColor.copy(0.2f), Color.White))
+val backgroundGradient = Brush.linearGradient(listOf(themeColor.copy(0.2f), Color.White))
+val backgroundGradient2 = Brush.linearGradient(listOf(themeColor.copy(0.4f), themeColor.copy(0.2f)))

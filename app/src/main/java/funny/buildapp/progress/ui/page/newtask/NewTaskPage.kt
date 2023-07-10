@@ -40,7 +40,6 @@ import funny.buildapp.progress.ui.theme.backgroundGradient
 import funny.buildapp.progress.ui.theme.transparent
 import funny.buildapp.progress.utils.compareDate
 import funny.buildapp.progress.utils.getCurrentDate
-import funny.buildapp.progress.utils.showToast
 import funny.buildapp.progress.widgets.AppToolsBar
 import funny.buildapp.progress.widgets.FillWidthButton
 import funny.buildapp.progress.widgets.MyDatePicker
@@ -61,7 +60,7 @@ fun NewTaskPage(navCtrl: NavHostController) {
         LazyColumn(
             Modifier
                 .fillMaxSize()
-                .background(backgroundGradient)
+                .background(backgroundGradient),
         ) {
             item {
                 AppToolsBar(
@@ -96,7 +95,7 @@ fun NewTaskPage(navCtrl: NavHostController) {
             }
             item {
                 FillWidthButton(
-                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 4.dp),
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                     text = "保存"
                 ) { }
             }

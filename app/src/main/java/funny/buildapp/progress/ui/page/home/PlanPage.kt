@@ -23,7 +23,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,27 +34,21 @@ import com.google.accompanist.placeholder.material.placeholder
 import funny.buildapp.progress.ui.page.route.Route
 import funny.buildapp.progress.ui.page.route.RouteUtils
 import funny.buildapp.progress.ui.theme.AppTheme
-import funny.buildapp.progress.ui.theme.H1
-import funny.buildapp.progress.ui.theme.H2
 import funny.buildapp.progress.ui.theme.H3
-import funny.buildapp.progress.ui.theme.H6
 import funny.buildapp.progress.ui.theme.ToolBarHeight
 import funny.buildapp.progress.ui.theme.backgroundGradient
 import funny.buildapp.progress.ui.theme.themeColor
-import funny.buildapp.progress.widgets.AppToolsBar
-import funny.buildapp.progress.widgets.TextContent
-import funny.buildapp.progress.widgets.Title
 import funny.buildapp.progress.widgets.clickWithoutWave
 
 @Composable
-fun HomePage(navCtrl: NavHostController) {
+fun PlanPage(navCtrl: NavHostController) {
     LazyColumn(
         Modifier
             .fillMaxSize()
             .background(backgroundGradient)
     ) {
         item {
-            HomeToolBar(title = "全部目标")
+            ScheduleToolBar(title = "全部目标")
         }
         items(10) {
             ProgressCard(
@@ -70,9 +63,9 @@ fun HomePage(navCtrl: NavHostController) {
 }
 
 @Composable
-fun HomeToolBar(title: String) {
+fun ScheduleToolBar(modifier: Modifier = Modifier, title: String) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(ToolBarHeight + 40.dp),
     ) {
@@ -157,5 +150,5 @@ fun ProgressCard(
 @Preview(showBackground = true)
 @Composable
 fun HomePagePreview() {
-    HomePage(navCtrl = rememberNavController())
+    PlanPage(navCtrl = rememberNavController())
 }

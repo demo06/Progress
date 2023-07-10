@@ -4,8 +4,8 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddTask
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -20,9 +20,9 @@ import funny.buildapp.progress.ui.page.route.AppNav
 import funny.buildapp.progress.ui.page.route.Route
 import funny.buildapp.progress.ui.page.route.RouteUtils
 import funny.buildapp.progress.ui.theme.themeColor
+import funny.buildapp.progress.widgets.BottomBar
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalComposeUiApi
 @ExperimentalFoundationApi
 @Composable
@@ -35,20 +35,38 @@ fun AppScaffold() {
             .statusBarsPadding()
             .navigationBarsPadding(),
         floatingActionButton = {
-            if (currentDestination?.route == Route.HOME) {
+            if (currentDestination?.route == Route.HOME || currentDestination?.route == Route.SCHEDULE) {
                 FloatingActionButton(
                     containerColor = themeColor,
-                    onClick = { RouteUtils.navTo(navCtrl, Route.NEW_TASK) }
+                    onClick = {
+                        if (currentDestination.route == Route.HOME) {
+                            RouteUtils.navTo(navCtrl, Route.NEW_TASK)
+                        } else if (currentDestination.route == Route.SCHEDULE) {
+                            RouteUtils.navTo(navCtrl, Route.CREATE_SCHEDULE)
+                        }
+
+                    }
                 ) {
                     Icon(
-                        Icons.Filled.Edit,
+                        if (currentDestination.route == Route.HOME) {
+                            Icons.Filled.Edit
+                        } else {
+                            Icons.Filled.AddTask
+                        },
                         contentDescription = "Localized description",
                         tint = Color.White
                     )
                 }
             }
         },
-        bottomBar = { },//nothing to do
+        bottomBar = {
+            when (currentDestination?.route) {
+                Route.HOME -> BottomBar(navCtrl = navCtrl)
+                Route.TODO -> BottomBar(navCtrl = navCtrl)
+                Route.SCHEDULE -> BottomBar(navCtrl = navCtrl)
+                else -> {}
+            }
+        },//nothing to do
         content = {
             AppNav(navCtrl = navCtrl, padding = it)
         },
