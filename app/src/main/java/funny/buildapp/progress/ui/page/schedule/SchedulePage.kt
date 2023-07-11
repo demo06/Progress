@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -16,7 +15,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -26,8 +24,6 @@ import androidx.navigation.compose.rememberNavController
 import funny.buildapp.progress.ui.theme.AppTheme
 import funny.buildapp.progress.ui.theme.backgroundGradient
 import funny.buildapp.progress.ui.theme.white
-import funny.buildapp.progress.widgets.RoundCard
-import funny.buildapp.progress.widgets.clickWithoutWave
 
 @Composable
 fun SchedulePage(navCtrl: NavHostController) {
@@ -36,14 +32,14 @@ fun SchedulePage(navCtrl: NavHostController) {
             .fillMaxSize()
             .background(backgroundGradient),
     ) {
-        DateCard()
+        DatePane()
         ScheduleCard()
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DateCard() {
+fun DatePane() {
     val datePickerState = rememberDatePickerState()
     DatePicker(
         modifier = Modifier

@@ -1,4 +1,4 @@
-package funny.buildapp.progress.ui.page.task
+package funny.buildapp.progress.ui.page.todo
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +15,10 @@ import androidx.compose.material.icons.rounded.RadioButtonUnchecked
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,6 +35,7 @@ import funny.buildapp.progress.widgets.clickWithoutWave
 
 @Composable
 fun TodoPage(navCtrl: NavHostController) {
+    var selected by remember { mutableStateOf(false) }
     LazyColumn(
         Modifier
             .fillMaxSize()
@@ -40,13 +45,15 @@ fun TodoPage(navCtrl: NavHostController) {
             ScheduleToolBar(title = "今日待办")
         }
         items(10) {
-            TodoItem(selected = false, onClick = { })
+            TodoItem(selected = selected, onClick = {
+                selected = !selected
+            })
         }
         item {
             Label()
         }
         items(10) {
-            TodoItem(selected = true, onClick = { })
+            TodoItem(selected = true, onClick = {})
         }
     }
 }

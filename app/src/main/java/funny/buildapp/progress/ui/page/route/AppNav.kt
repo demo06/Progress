@@ -9,10 +9,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import funny.buildapp.progress.ui.page.detail.DetailPage
 import funny.buildapp.progress.ui.page.home.PlanPage
-import funny.buildapp.progress.ui.page.newtask.NewTaskPage
+import funny.buildapp.progress.ui.page.home.NewPlanPage
 import funny.buildapp.progress.ui.page.schedule.CreateSchedulePage
 import funny.buildapp.progress.ui.page.schedule.SchedulePage
-import funny.buildapp.progress.ui.page.task.TodoPage
+import funny.buildapp.progress.ui.page.todo.TodoPage
 
 @Composable
 fun AppNav(navCtrl: NavHostController, padding: PaddingValues) {
@@ -27,7 +27,7 @@ fun AppNav(navCtrl: NavHostController, padding: PaddingValues) {
         }
         //new task
         composable(route = Route.NEW_TASK) {
-            NewTaskPage(navCtrl)
+            NewPlanPage(navCtrl)
         }
         //task
         composable(route = Route.TODO) {

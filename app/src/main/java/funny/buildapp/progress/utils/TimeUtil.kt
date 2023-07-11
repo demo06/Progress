@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 fun compareDate(startTime: String, endTime: String): Boolean {
+    if (startTime==endTime) return true
     return startTime.stringToDate().before(endTime.stringToDate())
 }
 

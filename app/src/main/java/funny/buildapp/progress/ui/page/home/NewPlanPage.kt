@@ -1,4 +1,4 @@
-package funny.buildapp.progress.ui.page.newtask
+package funny.buildapp.progress.ui.page.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -44,11 +44,12 @@ import funny.buildapp.progress.widgets.AppToolsBar
 import funny.buildapp.progress.widgets.FillWidthButton
 import funny.buildapp.progress.widgets.MyDatePicker
 import funny.buildapp.progress.widgets.RoundCard
+import funny.buildapp.progress.widgets.SpaceLine
 import funny.buildapp.progress.widgets.clickWithoutWave
 import kotlinx.coroutines.launch
 
 @Composable
-fun NewTaskPage(navCtrl: NavHostController) {
+fun NewPlanPage(navCtrl: NavHostController) {
     var title by remember { mutableStateOf("") }
     val snackState = remember { SnackbarHostState() }
     val snackScope = rememberCoroutineScope()
@@ -71,7 +72,7 @@ fun NewTaskPage(navCtrl: NavHostController) {
                 )
             }
             item {
-                TaskTitle(
+                PlanTitle(
                     text = title,
                     onTextChange = {
                         title = it
@@ -135,13 +136,18 @@ fun NewTaskPage(navCtrl: NavHostController) {
 }
 
 @Composable
-fun TaskTitle(text: String = "在这里输入目标标题", onTextChange: (String) -> Unit = {}) {
+fun PlanTitle(
+    text: String = "",
+    hint: String = "在这里输入目标标题",
+    title: String = "目标名称",
+    onTextChange: (String) -> Unit = {}
+) {
     Column(
         modifier = Modifier.padding(horizontal = 4.dp),
         content = {
             Text(
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                text = "目标名称",
+                text = title,
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
             )
@@ -165,7 +171,7 @@ fun TaskTitle(text: String = "在这里输入目标标题", onTextChange: (Strin
                                 // 当空字符时, 显示hint
                                 if (text.isEmpty())
                                     Text(
-                                        text = "在这里输入目标标题",
+                                        text = hint,
                                         color = AppTheme.colors.textSecondary,
                                     )
                                 // 原本输入框的内容
@@ -197,15 +203,9 @@ fun DateCard(
                 fontSize = 18.sp,
             )
             RoundCard {
-                TaskItem("开始时间", startTime, onClick = { startTimeClick() })
-                Spacer(
-                    modifier = Modifier
-                        .padding(vertical = 12.dp)
-                        .fillMaxWidth()
-                        .height(1.dp)
-                        .background(AppTheme.colors.divider)
-                )
-                TaskItem("结束时间", endTime, onClick = { endTimeClick() })
+                TaskItem("开始时间", startTime) { startTimeClick() }
+                SpaceLine()
+                TaskItem("结束时间", endTime) { endTimeClick() }
             }
         }
     )
@@ -239,26 +239,39 @@ fun ProportionCard() {
 }
 
 @Composable
-fun TaskItem(title: String, progress: String, onClick: () -> Unit = {}) {
+fun TaskItem(
+    title: String,
+    text: String = "",
+    content: @Composable (() -> Unit?)? = null,
+    onItemClick: () -> Unit = {},
+    onClick: () -> Unit = {}
+) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickWithoutWave { onItemClick() },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(text = title)
-        Text(
-            text = progress,
-            color = AppTheme.colors.textThird,
-            modifier = Modifier
-                .width(90.dp)
-                .background(
-                    AppTheme.colors.themeUi.copy(0.8f),
-                    RoundedCornerShape(8.dp)
-                )
-                .clickWithoutWave { onClick() }
-                .padding(vertical = 4.dp, horizontal = 8.dp),
-            textAlign = TextAlign.Center
-        )
+        if (content == null) {
+            Text(
+                text = text,
+                color = AppTheme.colors.textThird,
+                modifier = Modifier
+                    .width(90.dp)
+                    .background(
+                        AppTheme.colors.themeUi.copy(0.8f),
+                        RoundedCornerShape(8.dp)
+                    )
+                    .clickWithoutWave { onClick() }
+                    .padding(vertical = 4.dp, horizontal = 8.dp),
+                textAlign = TextAlign.Center
+            )
+        } else {
+            content()
+        }
+
     }
 }
 
@@ -266,5 +279,5 @@ fun TaskItem(title: String, progress: String, onClick: () -> Unit = {}) {
 @Preview(showBackground = true)
 @Composable
 fun NewTaskPreview() {
-    NewTaskPage(navCtrl = rememberNavController())
+    NewPlanPage(navCtrl = rememberNavController())
 }

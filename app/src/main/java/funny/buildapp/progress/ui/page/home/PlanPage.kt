@@ -48,7 +48,7 @@ fun PlanPage(navCtrl: NavHostController) {
             .background(backgroundGradient)
     ) {
         item {
-            ScheduleToolBar(title = "全部目标")
+            ScheduleToolBar(title = "计划进度")
         }
         items(10) {
             ProgressCard(
