@@ -2,6 +2,33 @@ package funny.buildapp.progress.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
+/**
+ * Theme color
+ * | percent | Hex |
+ * | :-----: | :-----: |
+ * | 100% | FF |
+ * | 95% | F2 |
+ * | 90% | E6 |
+ * | 85% | D9 |
+ * | 80% | CC |
+ * | 75% | BF |
+ * | 70% | B3 |
+ * | 65% | A6 |
+ * | 60% | 99 |
+ * | 55% | 8C |
+ * | 50% | 80 |
+ * | 45% | 73 |
+ * | 40% | 66 |
+ * | 35% | 59 |
+ * | 30% | 4D |
+ * | 25% | 40 |
+ * | 20% | 33 |
+ * | 15% | 26 |
+ * | 10% | 1A |
+ * | 5% | 0D |
+ * | 0% | 00 |
+ *
+ */
 
 val themeColor = Color(0xFF2BBFA0)
 val backgroundColor = Color(0XFFEEEEEE)
@@ -27,8 +54,8 @@ val grey2 = Color(0xFFCCC7BF)
 val grey3 = Color(0xFF666666)
 val grey4 = Color(0xFFB2B2B2)
 val grey5 = Color(0xFF5E5E5E)
-val grey6 = Color(0XFF939393)
-val cyan = Color(0xFF00FFFF)
+val grey6 = Color(0xFF939393)
+val cyan = Color(0xFF51cab1)
 val green1 = Color(0xFFB0EB6E)
 val green2 = Color(0xFF17B34F)
 val green3 = Color(0xFF67BF63)

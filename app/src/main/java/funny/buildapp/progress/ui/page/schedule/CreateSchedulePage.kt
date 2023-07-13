@@ -40,10 +40,12 @@ import funny.buildapp.progress.ui.page.home.TaskItem
 import funny.buildapp.progress.ui.page.route.RouteUtils.back
 import funny.buildapp.progress.ui.theme.AppTheme
 import funny.buildapp.progress.ui.theme.backgroundGradient
-import funny.buildapp.progress.ui.theme.black
+import funny.buildapp.progress.ui.theme.cyan
+import funny.buildapp.progress.ui.theme.themeColor
 import funny.buildapp.progress.ui.theme.transparent
 import funny.buildapp.progress.utils.compareDate
 import funny.buildapp.progress.utils.getCurrentDate
+import funny.buildapp.progress.utils.loge
 import funny.buildapp.progress.widgets.AppToolsBar
 import funny.buildapp.progress.widgets.FillWidthButton
 import funny.buildapp.progress.widgets.MyDatePicker
@@ -63,8 +65,11 @@ fun CreateSchedulePage(navCtrl: NavHostController) {
             SnackbarHost(hostState = snackState)
         },
         content = { it ->
-            it
-            Box(modifier = Modifier.fillMaxSize()) {
+            Box(
+                modifier = Modifier
+                    .padding(it)
+                    .fillMaxSize()
+            ) {
                 ScheduleBody(
                     navCtrl = navCtrl,
                     dialogConfirm = {
@@ -231,11 +236,13 @@ fun PlanBottomSheet(onItemClick: () -> Unit = {}, onDismiss: () -> Unit = {}) {
                     bottomEnd = 0.dp
                 )
             )
-            .background(AppTheme.colors.themeUi),
+            .background(cyan),
         content = {
             stickyHeader {
                 AppToolsBar(
-                    title = "选择计划", imageVector = Icons.Default.Close,
+                    title = "选择计划",
+                    backgroundColor = cyan,
+                    imageVector = Icons.Default.Close,
                     onRightClick = { onDismiss() },
                 )
             }

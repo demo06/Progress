@@ -45,27 +45,33 @@ fun TodoPage(navCtrl: NavHostController) {
             ScheduleToolBar(title = "今日待办")
         }
         items(10) {
-            TodoItem(selected = selected, onClick = {
-                selected = !selected
-            })
+            TodoItem(title = "完全版四级考纲词汇（乱序）",
+                selected = selected, onClick = {
+                    selected = !selected
+                })
         }
         item {
             Label()
         }
         items(10) {
-            TodoItem(selected = true, onClick = {})
+            TodoItem(title = "完全版四级考纲词汇（乱序）", selected = true, onClick = {})
         }
     }
 }
 
 
 @Composable
-fun TodoItem(selected: Boolean = false, onClick: () -> Unit) {
+fun TodoItem(
+    title: String,
+    selected: Boolean = false,
+    onClick: () -> Unit = {},
+    backgroundColor: Color = Color.White,
+) {
     Row(
         Modifier
             .padding(vertical = 4.dp, horizontal = 8.dp)
             .fillMaxWidth()
-            .background(Color.White, RoundedCornerShape(4.dp))
+            .background(backgroundColor, RoundedCornerShape(4.dp))
             .clickWithoutWave { onClick() }
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -77,7 +83,7 @@ fun TodoItem(selected: Boolean = false, onClick: () -> Unit) {
         )
         Text(
             modifier = Modifier.padding(start = 8.dp),
-            text = "完全版四级考纲词汇（乱序）",
+            text = title,
             textDecoration = if (selected) TextDecoration.LineThrough else null,
             color = if (selected) Color.Gray else Color.Unspecified
         )

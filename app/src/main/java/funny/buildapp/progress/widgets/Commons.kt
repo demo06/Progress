@@ -143,7 +143,7 @@ fun AppToolsBar(
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
                         .padding(horizontal = 20.dp)
-                        .clickable { onRightClick?.invoke() }
+                        .clickWithoutWave { onRightClick?.invoke() }
                 )
             }
 
