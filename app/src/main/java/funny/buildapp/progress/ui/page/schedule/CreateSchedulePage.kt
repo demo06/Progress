@@ -32,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import funny.buildapp.progress.ui.page.home.PlanTitle
@@ -57,7 +58,12 @@ import kotlinx.coroutines.launch
 
 
 @Composable
-fun CreateSchedulePage(navCtrl: NavHostController) {
+fun CreateSchedulePage(
+    navCtrl: NavHostController,
+    navBackStackEntry: NavBackStackEntry?,
+    modifier: Modifier = Modifier,
+) {
+    val editMode = navBackStackEntry?.arguments?.getInt("editMode")
     val snackState = remember { SnackbarHostState() }
     val snackScope = rememberCoroutineScope()
     var bottomSheet by remember { mutableStateOf(false) }
@@ -67,7 +73,7 @@ fun CreateSchedulePage(navCtrl: NavHostController) {
         },
         content = { it ->
             Box(
-                modifier = Modifier
+                modifier = modifier
                     .padding(it)
                     .fillMaxSize()
             ) {
@@ -78,7 +84,9 @@ fun CreateSchedulePage(navCtrl: NavHostController) {
                     },
                     selectPlan = {
                         bottomSheet = !bottomSheet
-                    })
+                    },
+                    isEdit = editMode != 0
+                )
                 CustomBottomSheet(
                     modifier = Modifier.align(Alignment.BottomCenter),
                     visible = bottomSheet,
@@ -94,6 +102,7 @@ fun CreateSchedulePage(navCtrl: NavHostController) {
 @Composable
 fun ScheduleBody(
     navCtrl: NavHostController,
+    isEdit: Boolean = false,
     dialogConfirm: (String) -> Unit,
     selectPlan: () -> Unit = {}
 ) {
@@ -110,7 +119,7 @@ fun ScheduleBody(
         ) {
             item {
                 AppToolsBar(
-                    title = "添加日程",
+                    title = if (isEdit) "编辑日程" else "添加日程",
                     tint = AppTheme.colors.themeUi,
                     backgroundColor = transparent,
                     onBack = { navCtrl.back() },
@@ -142,7 +151,7 @@ fun ScheduleBody(
             item {
                 FillWidthButton(
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-                    text = "添加"
+                    text = "保存"
                 ) {}
             }
         }
@@ -261,5 +270,5 @@ fun PlanBottomSheet(onItemClick: () -> Unit = {}, onDismiss: () -> Unit = {}) {
 @Preview(showBackground = true)
 @Composable
 fun CreateSchedulePreview() {
-    CreateSchedulePage(navCtrl = rememberNavController())
+    CreateSchedulePage(navCtrl = rememberNavController(), navBackStackEntry = null)
 }

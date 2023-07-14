@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import funny.buildapp.progress.ui.page.detail.DetailPage
 import funny.buildapp.progress.ui.page.home.PlanPage
 import funny.buildapp.progress.ui.page.home.NewPlanPage
@@ -46,8 +48,14 @@ fun AppNav(navCtrl: NavHostController, padding: PaddingValues) {
             SchedulePage(navCtrl)
         }
         //create schedule
-        composable(route = Route.CREATE_SCHEDULE) {
-            CreateSchedulePage(navCtrl)
+        composable(
+            route = Route.CREATE_SCHEDULE + "/{editMode}",
+            arguments = listOf(navArgument("editMode") {
+                type = NavType.IntType
+                defaultValue = 0
+            })
+        ) {
+            CreateSchedulePage(navCtrl, it)
         }
     }
 }

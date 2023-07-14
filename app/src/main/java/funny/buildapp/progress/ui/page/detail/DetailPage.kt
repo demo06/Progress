@@ -121,7 +121,8 @@ fun DetailContent(
     ) {
         item {
             Text(
-                text = title, fontWeight = FontWeight.Bold,
+                text = title,
+                fontWeight = FontWeight.Bold,
                 modifier = Modifier.fillMaxWidth(),
                 fontSize = 18.sp,
             )

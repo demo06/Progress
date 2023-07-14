@@ -42,7 +42,7 @@ fun AppScaffold() {
                         if (currentDestination.route == Route.HOME) {
                             RouteUtils.navTo(navCtrl, Route.NEW_TASK)
                         } else if (currentDestination.route == Route.SCHEDULE) {
-                            RouteUtils.navTo(navCtrl, Route.CREATE_SCHEDULE)
+                            RouteUtils.navTo(navCtrl, Route.CREATE_SCHEDULE, 0)
                         }
 
                     }
