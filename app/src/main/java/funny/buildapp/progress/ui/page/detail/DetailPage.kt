@@ -1,7 +1,9 @@
 package funny.buildapp.progress.ui.page.detail
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,9 +13,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,39 +36,71 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import funny.buildapp.progress.ui.page.home.NewPlanPage
+import funny.buildapp.progress.ui.page.home.NewPlanPageState
+import funny.buildapp.progress.ui.page.home.ProgressCard
 import funny.buildapp.progress.ui.page.route.RouteUtils.back
 import funny.buildapp.progress.ui.page.todo.TodoItem
 import funny.buildapp.progress.ui.theme.AppTheme
-import funny.buildapp.progress.ui.theme.backgroundGradient
-import funny.buildapp.progress.ui.theme.backgroundGradient2
+import funny.buildapp.progress.ui.theme.black
+import funny.buildapp.progress.ui.theme.cyan
 import funny.buildapp.progress.ui.theme.themeColor
 import funny.buildapp.progress.ui.theme.transparent
 import funny.buildapp.progress.ui.theme.white
 import funny.buildapp.progress.widgets.AppToolsBar
+import funny.buildapp.progress.widgets.CustomBottomSheet
+
 
 @Composable
 fun DetailPage(navCtrl: NavHostController) {
-    Column(
+    var bottomSheet by remember { mutableStateOf(false) }
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(themeColor.copy(0.2f))
     ) {
-        AppToolsBar(title = "计划详情",
-            backgroundColor = transparent,
-            tint = AppTheme.colors.themeUi,
-            rightText = "编辑",
-            onBack = { navCtrl.back() }
-        )
-        DetailContent(
-            title = "完全版四级考纲词汇（乱序）",
-            startTime = "2021-08-01",
-            endTime = "2021-08-31",
-            progress = 20.7f,
-            proportion = "20/100",
-            surplus = "100",
-            delay = "1"
-        )
-        Schedule()
+        Column {
+            AppToolsBar(title = "计划详情",
+                backgroundColor = transparent,
+                tint = AppTheme.colors.themeUi,
+                rightText = "编辑",
+                onBack = { navCtrl.back() },
+                onRightClick = { bottomSheet = !bottomSheet }
+            )
+            DetailContent(
+                title = "完全版四级考纲词汇（乱序）",
+                startTime = "2021-08-01",
+                endTime = "2021-08-31",
+                progress = 20.7f,
+                proportion = "20/100",
+                surplus = "100",
+                delay = "1"
+            )
+            Schedule()
+        }
+        CustomBottomSheet(
+            modifier = Modifier
+                .background(black.copy(0.4f))
+                .align(Alignment.BottomCenter),
+            visible = bottomSheet,
+            content = {
+                NewPlanPage(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 60.dp)
+                        .clip(
+                            RoundedCornerShape(
+                                topStart = 16.dp,
+                                topEnd = 16.dp,
+                                bottomStart = 0.dp,
+                                bottomEnd = 0.dp
+                            )
+                        ),
+                    navCtrl = navCtrl,
+                    isEditMode = true,
+                    onDismiss = { bottomSheet = !bottomSheet },
+                )
+            })
     }
 }
 
@@ -167,6 +207,44 @@ fun Schedule() {
             )
         }
     }
+}
+
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun EditPlanSheet(onDismiss: () -> Unit = {}, onItemClick: () -> Unit = {}) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 50.dp)
+            .clip(
+                RoundedCornerShape(
+                    topStart = 16.dp,
+                    topEnd = 16.dp,
+                    bottomStart = 0.dp,
+                    bottomEnd = 0.dp
+                )
+            )
+            .background(cyan),
+        content = {
+            stickyHeader {
+                AppToolsBar(
+                    title = "编辑计划",
+                    backgroundColor = cyan,
+                    imageVector = Icons.Default.Close,
+                    onRightClick = { onDismiss() },
+                )
+            }
+            items(10) {
+                ProgressCard(
+                    progress = 27.7f,
+                    title = "完全版四级考纲词汇（乱序）",
+                    status = "",
+                    proportion = "1708/6145",
+                    onClick = { onItemClick() }
+                )
+            }
+        })
 }
 
 @Preview(showBackground = true)

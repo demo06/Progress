@@ -2,6 +2,9 @@ package funny.buildapp.progress.widgets
 
 import android.widget.DatePicker
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideIn
+import androidx.compose.animation.slideOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -30,6 +33,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Sailing
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.ButtonDefaults
@@ -67,6 +71,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -78,6 +83,7 @@ import coil.compose.AsyncImage
 import funny.buildapp.progress.ui.page.route.BottomNavRoute
 import funny.buildapp.progress.ui.page.route.Route
 import funny.buildapp.progress.ui.page.route.RouteUtils
+import funny.buildapp.progress.ui.page.schedule.PlanBottomSheet
 import funny.buildapp.progress.ui.theme.AppTheme
 import funny.buildapp.progress.ui.theme.H5
 import funny.buildapp.progress.ui.theme.H6
@@ -641,6 +647,22 @@ fun SwitchButton(
             uncheckedBorderColor = AppTheme.colors.divider,
         ),
         onCheckedChange = { onCheckedChange(it) })
+}
+
+@Composable
+fun CustomBottomSheet(
+    modifier: Modifier = Modifier,
+    visible: Boolean = false,
+    content: @Composable () -> Unit
+) {
+    AnimatedVisibility(
+        modifier = modifier,
+        visible = visible,
+        enter = slideIn { IntOffset(0, it.height / 2) },
+        exit = slideOut { IntOffset(0, it.height) }
+    ) {
+        content()
+    }
 }
 
 @Preview

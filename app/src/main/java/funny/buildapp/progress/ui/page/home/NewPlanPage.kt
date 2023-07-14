@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -25,7 +27,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -38,6 +42,7 @@ import funny.buildapp.progress.ui.page.route.RouteUtils.back
 import funny.buildapp.progress.ui.theme.AppTheme
 import funny.buildapp.progress.ui.theme.backgroundGradient
 import funny.buildapp.progress.ui.theme.transparent
+import funny.buildapp.progress.ui.theme.white
 import funny.buildapp.progress.utils.compareDate
 import funny.buildapp.progress.utils.getCurrentDate
 import funny.buildapp.progress.widgets.AppToolsBar
@@ -49,7 +54,12 @@ import funny.buildapp.progress.widgets.clickWithoutWave
 import kotlinx.coroutines.launch
 
 @Composable
-fun NewPlanPage(navCtrl: NavHostController) {
+fun NewPlanPage(
+    navCtrl: NavHostController,
+    modifier: Modifier = Modifier,
+    isEditMode: Boolean = false,
+    onDismiss: (() -> Unit)? = null
+) {
     var title by remember { mutableStateOf("") }
     val snackState = remember { SnackbarHostState() }
     val snackScope = rememberCoroutineScope()
@@ -59,16 +69,27 @@ fun NewPlanPage(navCtrl: NavHostController) {
     var dialogState by remember { mutableStateOf(0) }
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
-            Modifier
+            modifier
                 .fillMaxSize()
+                .background(white)
                 .background(backgroundGradient),
         ) {
             item {
                 AppToolsBar(
-                    title = "新建目标",
+                    title = if (isEditMode) "编辑计划" else "新建计划",
                     tint = AppTheme.colors.themeUi,
                     backgroundColor = transparent,
-                    onBack = { navCtrl.back() },
+                    onBack = if (isEditMode) {
+                        null
+                    } else {
+                        { navCtrl.back() }
+                    },
+                    imageVector = if (isEditMode) Icons.Default.Close else null,
+                    onRightClick = if (isEditMode) {
+                        { onDismiss?.invoke() }
+                    } else {
+                        null
+                    }
                 )
             }
             item {
@@ -275,6 +296,14 @@ fun TaskItem(
     }
 }
 
+class NewPlanPageState(
+    val title: String,
+    val titleTine: Color,
+    val showLeft: Boolean = true,
+    private val showRight: Boolean = false,
+    val rightButton: ImageVector? = if (showRight) Icons.Default.Close else null,
+    val rightButtonClick: (() -> Unit)? = null
+)
 
 @Preview(showBackground = true)
 @Composable

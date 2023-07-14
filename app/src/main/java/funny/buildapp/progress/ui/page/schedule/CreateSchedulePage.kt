@@ -47,6 +47,7 @@ import funny.buildapp.progress.utils.compareDate
 import funny.buildapp.progress.utils.getCurrentDate
 import funny.buildapp.progress.utils.loge
 import funny.buildapp.progress.widgets.AppToolsBar
+import funny.buildapp.progress.widgets.CustomBottomSheet
 import funny.buildapp.progress.widgets.FillWidthButton
 import funny.buildapp.progress.widgets.MyDatePicker
 import funny.buildapp.progress.widgets.RoundCard
@@ -78,16 +79,14 @@ fun CreateSchedulePage(navCtrl: NavHostController) {
                     selectPlan = {
                         bottomSheet = !bottomSheet
                     })
-                AnimatedVisibility(
+                CustomBottomSheet(
                     modifier = Modifier.align(Alignment.BottomCenter),
                     visible = bottomSheet,
-                    enter = slideIn { IntOffset(0, it.height / 2) },
-                    exit = slideOut { IntOffset(0, it.height) }
-                ) {
-                    PlanBottomSheet(
-                        onItemClick = { bottomSheet = !bottomSheet },
-                        onDismiss = { bottomSheet = !bottomSheet })
-                }
+                    content = {
+                        PlanBottomSheet(
+                            onItemClick = { bottomSheet = !bottomSheet },
+                            onDismiss = { bottomSheet = !bottomSheet })
+                    })
             }
         })
 }
