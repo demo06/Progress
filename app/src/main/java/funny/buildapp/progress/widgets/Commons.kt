@@ -10,6 +10,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -35,6 +36,7 @@ import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Sailing
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePickerDefaults
@@ -50,6 +52,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -80,6 +83,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.AsyncImage
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import funny.buildapp.progress.ui.page.route.BottomNavRoute
 import funny.buildapp.progress.ui.page.route.Route
 import funny.buildapp.progress.ui.page.route.RouteUtils
@@ -296,15 +300,17 @@ fun RoundCard(content: @Composable ColumnScope.() -> Unit) {
 fun FillWidthButton(
     modifier: Modifier = Modifier,
     text: String,
+    colors: ButtonColors = ButtonDefaults.buttonColors(containerColor = themeColor),
+    fontColor: Color = white,
     onClick: () -> Unit
 ) {
     Button(
         onClick = { onClick() },
         shape = RoundedCornerShape(4.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = themeColor),
+        colors = colors,
         modifier = modifier.fillMaxWidth()
     ) {
-        Text(text = text, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+        Text(text = text, fontSize = 16.sp, fontWeight = Bold, color = fontColor)
     }
 }
 
@@ -339,7 +345,7 @@ fun HeadAvatar(
                 text = name.first().toString(),
                 color = Color.White,
                 fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
+                fontWeight = Bold,
                 modifier = Modifier.align(Alignment.Center)
             )
         }
@@ -664,6 +670,24 @@ fun CustomBottomSheet(
         content()
     }
 }
+
+
+@Composable
+fun TransparentSystemBars() {
+    val systemUiController = rememberSystemUiController()
+    val useDarkIcons = !isSystemInDarkTheme()
+    SideEffect {
+        systemUiController.setStatusBarColor(
+            color = themeColor.copy(0.2f),
+            darkIcons = useDarkIcons,
+        )
+        systemUiController.setNavigationBarColor(
+            color = Color.Transparent,
+            darkIcons = useDarkIcons,
+        )
+    }
+}
+
 
 @Preview
 @Composable

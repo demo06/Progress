@@ -16,6 +16,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -41,6 +43,7 @@ import androidx.navigation.compose.rememberNavController
 import funny.buildapp.progress.ui.page.route.RouteUtils.back
 import funny.buildapp.progress.ui.theme.AppTheme
 import funny.buildapp.progress.ui.theme.backgroundGradient
+import funny.buildapp.progress.ui.theme.red
 import funny.buildapp.progress.ui.theme.transparent
 import funny.buildapp.progress.ui.theme.white
 import funny.buildapp.progress.utils.compareDate
@@ -121,6 +124,20 @@ fun NewPlanPage(
                     text = "保存"
                 ) { }
             }
+            if(isEditMode){
+                item {
+                    FillWidthButton(
+                        modifier = Modifier.padding(horizontal = 12.dp),
+                        text = "删除",
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = AppTheme.colors.themeUi.copy(0.2f),
+                        ),
+                        fontColor = red.copy(0.6f),
+                        onClick = {},
+                    )
+                }
+            }
+
         }
         if (openDialog) {
             MyDatePicker(

@@ -3,6 +3,7 @@ package funny.buildapp.progress.ui.page
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddTask
 import androidx.compose.material.icons.filled.Edit
@@ -32,8 +33,7 @@ fun AppScaffold() {
     val currentDestination = navBackStackEntry?.destination
     Scaffold(
         modifier = Modifier
-            .statusBarsPadding()
-            .navigationBarsPadding(),
+            .systemBarsPadding(),
         floatingActionButton = {
             if (currentDestination?.route == Route.HOME || currentDestination?.route == Route.SCHEDULE) {
                 FloatingActionButton(

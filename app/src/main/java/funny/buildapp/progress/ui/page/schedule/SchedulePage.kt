@@ -50,7 +50,7 @@ fun SchedulePage(navCtrl: NavHostController) {
         Column(
             Modifier
                 .fillMaxSize()
-                .background(backgroundGradient),
+                .background(white),
         ) {
             DatePane()
             ScheduleCard(onItemClick = {
@@ -73,7 +73,7 @@ fun DatePane() {
     DatePicker(
         modifier = Modifier
             .fillMaxWidth()
-            .background(AppTheme.colors.themeUi.copy(0.1f)),
+            .background(AppTheme.colors.themeUi.copy(0.2f)),
         state = datePickerState,
         headline = null,
         title = null,

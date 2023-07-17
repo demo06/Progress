@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -42,6 +43,7 @@ import funny.buildapp.progress.ui.page.route.RouteUtils.back
 import funny.buildapp.progress.ui.theme.AppTheme
 import funny.buildapp.progress.ui.theme.backgroundGradient
 import funny.buildapp.progress.ui.theme.cyan
+import funny.buildapp.progress.ui.theme.red
 import funny.buildapp.progress.ui.theme.themeColor
 import funny.buildapp.progress.ui.theme.transparent
 import funny.buildapp.progress.utils.compareDate
@@ -153,6 +155,19 @@ fun ScheduleBody(
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                     text = "保存"
                 ) {}
+            }
+            if (isEdit) {
+                item {
+                    FillWidthButton(
+                        modifier = Modifier.padding(horizontal = 12.dp),
+                        text = "删除",
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = AppTheme.colors.themeUi.copy(0.2f),
+                        ),
+                        fontColor = red.copy(0.6f),
+                        onClick = {},
+                    )
+                }
             }
         }
         if (openDialog) {

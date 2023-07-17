@@ -30,6 +30,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import funny.buildapp.progress.ui.page.home.ScheduleToolBar
 import funny.buildapp.progress.ui.theme.AppTheme
+import funny.buildapp.progress.ui.theme.backgroundGradient
 import funny.buildapp.progress.ui.theme.backgroundGradient2
 import funny.buildapp.progress.widgets.clickWithoutWave
 
@@ -39,7 +40,7 @@ fun TodoPage(navCtrl: NavHostController) {
     LazyColumn(
         Modifier
             .fillMaxSize()
-            .background(backgroundGradient2)
+            .background(AppTheme.colors.themeUi.copy(0.2f))
     ) {
         item {
             ScheduleToolBar(title = "今日待办")
