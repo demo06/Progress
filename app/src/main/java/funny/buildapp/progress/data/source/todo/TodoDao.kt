@@ -15,7 +15,7 @@ interface TodoDao {
     suspend fun loadAllByIds(todoIds: IntArray): List<Todo>
 
     @Upsert
-    suspend fun upsertTodo(todos: Todo): Int
+    suspend fun insertTodo(todo: Todo): Long
 
     @Delete
     suspend fun delete(todo: Todo): Int

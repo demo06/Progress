@@ -9,8 +9,6 @@ import javax.inject.Singleton
 class TodoRepository @Inject constructor(private val todoDao: TodoDao) {
     suspend fun getAll() = todoDao.getAll()
     suspend fun loadAllByIds(todoIds: IntArray) = todoDao.loadAllByIds(todoIds)
-    suspend fun upsert(todo: Todo): Int = todoDao.upsertTodo(todo)
-
-
-    suspend fun delete(id: Int): Int = todoDao.delete(Todo(id = id.toLong()))
+    suspend fun upsert(todo: Todo): Long = todoDao.insertTodo(todo)
+    suspend fun delete(id: Long): Int = todoDao.delete(Todo(id = id))
 }

@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import funny.buildapp.progress.data.source.DateConverter
+import funny.buildapp.progress.data.source.todo.Todo
 import java.util.Date
 
 @Entity(tableName = "plans")
@@ -16,4 +17,5 @@ data class Plan(
     val initialValue: Int = 0,
     val endValue: Int = 0,
     val status: Int = 0,
+    val todos: List<Todo> = arrayListOf(),
 )

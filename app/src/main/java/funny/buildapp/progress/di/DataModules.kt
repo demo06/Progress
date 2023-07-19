@@ -18,6 +18,8 @@ package funny.buildapp.progress.di
 
 import android.content.Context
 import androidx.room.Room
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -37,6 +39,14 @@ import javax.inject.Singleton
 //    @Binds
 //    abstract fun bindTodoRepository(repository: TodoRepository)
 //}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object GsonModule {
+    @Provides
+    fun provideGson(): Gson = GsonBuilder().create()
+}
+
 
 @Module
 @InstallIn(SingletonComponent::class)

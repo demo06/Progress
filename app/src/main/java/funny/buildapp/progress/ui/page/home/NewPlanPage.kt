@@ -139,7 +139,9 @@ fun NewPlanPage(
                             containerColor = AppTheme.colors.themeUi.copy(0.2f),
                         ),
                         fontColor = red.copy(0.6f),
-                        onClick = {},
+                        onClick = {
+                            viewModel.dispatch(PlanAction.Delete(1))
+                        },
                     )
                 }
             }

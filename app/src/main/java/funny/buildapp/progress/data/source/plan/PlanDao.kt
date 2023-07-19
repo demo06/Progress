@@ -11,11 +11,11 @@ interface PlanDao {
     @Query("SELECT * FROM plans")
     suspend fun getAll(): List<Plan>
 
-    @Query("SELECT * FROM plans WHERE id IN (:planId)")
-    suspend fun findPlanById(planId: Int): Plan
+    @Query("SELECT * FROM plans WHERE id IN (:planIds)")
+    suspend fun loadAllById(planIds: IntArray): List<Plan>
 
     @Upsert
-    suspend fun upsertPlan(plans: Plan): Int
+    suspend fun insertPlan(plans: Plan): Long
 
     @Delete
     suspend fun delete(plan: Plan): Int
