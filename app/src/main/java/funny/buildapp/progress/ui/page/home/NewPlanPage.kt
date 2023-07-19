@@ -38,6 +38,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import funny.buildapp.progress.ui.page.route.RouteUtils.back
@@ -59,6 +60,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun NewPlanPage(
     navCtrl: NavHostController,
+    viewModel: PlanViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
     isEditMode: Boolean = false,
     onDismiss: (() -> Unit)? = null
@@ -122,9 +124,13 @@ fun NewPlanPage(
                 FillWidthButton(
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                     text = "保存"
-                ) { }
+                ) {
+                    snackScope.launch {
+                        viewModel.insert()
+                    }
+                }
             }
-            if(isEditMode){
+            if (isEditMode) {
                 item {
                     FillWidthButton(
                         modifier = Modifier.padding(horizontal = 12.dp),

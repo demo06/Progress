@@ -4,18 +4,19 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Upsert
 
 @Dao
 interface TodoDao {
     @Query("SELECT * FROM todos")
-    fun getAll(): List<Todo>
+    suspend fun getAll(): List<Todo>
 
     @Query("SELECT * FROM todos WHERE id IN (:todoIds)")
-    fun loadAllByIds(todoIds: IntArray): List<Todo>
+    suspend fun loadAllByIds(todoIds: IntArray): List<Todo>
 
-    @Insert
-    fun insertTodo(todos: Todo)
+    @Upsert
+    suspend fun upsertTodo(todos: Todo): Int
 
     @Delete
-    fun delete(todo: Todo)
+    suspend fun delete(todo: Todo): Int
 }

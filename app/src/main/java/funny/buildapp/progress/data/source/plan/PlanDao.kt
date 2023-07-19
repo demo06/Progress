@@ -4,18 +4,19 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Upsert
 
 @Dao
 interface PlanDao {
     @Query("SELECT * FROM plans")
-    fun getAll(): List<Plan>
+    suspend fun getAll(): List<Plan>
 
-    @Query("SELECT * FROM plans WHERE id IN (:planIds)")
-    fun loadAllByIds(planIds: IntArray): List<Plan>
+    @Query("SELECT * FROM plans WHERE id IN (:planId)")
+    suspend fun findPlanById(planId: Int): Plan
 
-    @Insert
-    fun insertPlan(plans: Plan)
+    @Upsert
+    suspend fun upsertPlan(plans: Plan): Int
 
     @Delete
-    fun delete(plan: Plan)
+    suspend fun delete(plan: Plan): Int
 }

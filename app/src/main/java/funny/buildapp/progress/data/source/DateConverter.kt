@@ -2,18 +2,17 @@ package funny.buildapp.progress.data.source
 
 import androidx.room.TypeConverter
 import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 class DateConverter {
-    //parse string date time  to long
     @TypeConverter
-    fun fromDateString(value: String?): Long? {
-        return SimpleDateFormat("yyyy-dd-MM", Locale.CHINA).parse(value)?.time
+    fun fromTimestamp(value: Long): Date {
+        return Date(value)
     }
 
-    //parse long to string date time
     @TypeConverter
-    fun toDateString(value: Long?): String? {
-        return SimpleDateFormat("yyyy-dd-MM", Locale.CHINA).format(value)
+    fun dateToTimestamp(date: Date): Long {
+        return date.time
     }
 }
