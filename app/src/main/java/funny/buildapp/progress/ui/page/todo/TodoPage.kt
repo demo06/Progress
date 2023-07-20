@@ -28,10 +28,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import funny.buildapp.progress.ui.page.home.ScheduleToolBar
+import funny.buildapp.progress.ui.page.home.plan.ScheduleToolBar
 import funny.buildapp.progress.ui.theme.AppTheme
-import funny.buildapp.progress.ui.theme.backgroundGradient
-import funny.buildapp.progress.ui.theme.backgroundGradient2
 import funny.buildapp.progress.widgets.clickWithoutWave
 
 @Composable

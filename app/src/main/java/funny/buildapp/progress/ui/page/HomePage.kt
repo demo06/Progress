@@ -1,8 +1,8 @@
 package funny.buildapp.progress.ui.page
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddTask
@@ -17,17 +17,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import dagger.hilt.android.migration.CustomInjection.inject
-import funny.buildapp.progress.data.TodoRepository
-import funny.buildapp.progress.data.source.todo.Todo
 import funny.buildapp.progress.ui.page.route.AppNav
 import funny.buildapp.progress.ui.page.route.Route
 import funny.buildapp.progress.ui.page.route.RouteUtils
 import funny.buildapp.progress.ui.theme.themeColor
 import funny.buildapp.progress.widgets.BottomBar
-import javax.inject.Inject
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @ExperimentalComposeUiApi
 @ExperimentalFoundationApi
 @Composable
@@ -44,7 +41,7 @@ fun AppScaffold() {
                     containerColor = themeColor,
                     onClick = {
                         if (currentDestination.route == Route.HOME) {
-                            RouteUtils.navTo(navCtrl, Route.NEW_TASK)
+                            RouteUtils.navTo(navCtrl, Route.NEW_PLAN, 0)
                         } else if (currentDestination.route == Route.SCHEDULE) {
                             RouteUtils.navTo(navCtrl, Route.CREATE_SCHEDULE, 0)
                         }

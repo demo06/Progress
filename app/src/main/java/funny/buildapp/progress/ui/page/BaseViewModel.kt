@@ -3,10 +3,14 @@ package funny.buildapp.progress.ui.page
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavHostController
+import funny.buildapp.progress.utils.showToast
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 
 
@@ -27,20 +31,33 @@ abstract class BaseViewModel<T> : ViewModel() {
     fun <T> MutableStateFlow<T>.setState(reducer: T.() -> T) {
         this.value = this.value.reducer()
     }
-}
 
-fun DispatchEvent.executeEvent(
-    context: Context,
-    navController: NavHostController,
-) {
-    when (this) {
-        is DispatchEvent.ShowToast -> ""
-        is DispatchEvent.GoBack -> ""
-        else -> {}
+    protected fun <T> fetchData(
+        request: suspend () -> T,
+        onFailed: (String) -> Unit = {},
+        onSuccess: (T) -> Unit
+    ) {
+        viewModelScope.launch {
+            request
+                .asFlow()
+                .flowOn(Dispatchers.Default)
+                .catch {
+                    onFailed("获取信息失败")
+                }
+                .collect {
+                    onSuccess(it)
+                }
+        }
+    }
+
+    fun DispatchEvent.executeEvent() {
+        when (this) {
+            is DispatchEvent.ShowToast -> msg.showToast()
+        }
     }
 }
 
+
 sealed class DispatchEvent {
-    object GoBack : DispatchEvent()
     class ShowToast(val msg: String) : DispatchEvent()
 }

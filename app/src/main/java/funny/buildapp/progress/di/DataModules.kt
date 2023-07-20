@@ -28,6 +28,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import funny.buildapp.progress.data.TodoRepository
 import funny.buildapp.progress.data.source.AppDatabase
+import funny.buildapp.progress.data.source.plan.PlanDao
 import funny.buildapp.progress.data.source.todo.TodoDao
 import javax.inject.Singleton
 
@@ -56,10 +57,12 @@ object DatabaseModule {
     @Provides
     fun provideDataBase(@ApplicationContext context: Context): AppDatabase {
         return Room.databaseBuilder(context, AppDatabase::class.java, "Progress.db")
-            .fallbackToDestructiveMigration() // 数据库升级策略
             .build()
     }
 
     @Provides
     fun provideTodoDao(database: AppDatabase): TodoDao = database.todoDao()
+
+    @Provides
+    fun providePlanDao(database: AppDatabase): PlanDao = database.planDao()
 }

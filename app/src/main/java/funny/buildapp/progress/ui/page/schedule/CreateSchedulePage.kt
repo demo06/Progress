@@ -1,8 +1,6 @@
 package funny.buildapp.progress.ui.page.schedule
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.slideIn
-import androidx.compose.animation.slideOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -30,25 +28,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import funny.buildapp.progress.ui.page.home.PlanTitle
-import funny.buildapp.progress.ui.page.home.ProgressCard
-import funny.buildapp.progress.ui.page.home.TaskItem
+import funny.buildapp.progress.ui.page.home.newPlan.PlanTitle
+import funny.buildapp.progress.ui.page.home.plan.ProgressCard
+import funny.buildapp.progress.ui.page.home.newPlan.TaskItem
 import funny.buildapp.progress.ui.page.route.RouteUtils.back
 import funny.buildapp.progress.ui.theme.AppTheme
 import funny.buildapp.progress.ui.theme.backgroundGradient
 import funny.buildapp.progress.ui.theme.cyan
 import funny.buildapp.progress.ui.theme.red
-import funny.buildapp.progress.ui.theme.themeColor
 import funny.buildapp.progress.ui.theme.transparent
 import funny.buildapp.progress.utils.compareDate
 import funny.buildapp.progress.utils.getCurrentDate
-import funny.buildapp.progress.utils.loge
 import funny.buildapp.progress.widgets.AppToolsBar
 import funny.buildapp.progress.widgets.CustomBottomSheet
 import funny.buildapp.progress.widgets.FillWidthButton
@@ -271,7 +266,7 @@ fun PlanBottomSheet(onItemClick: () -> Unit = {}, onDismiss: () -> Unit = {}) {
             }
             items(10) {
                 ProgressCard(
-                    progress = 27.7f,
+                    progress = 27.7,
                     title = "完全版四级考纲词汇（乱序）",
                     status = "",
                     proportion = "1708/6145",

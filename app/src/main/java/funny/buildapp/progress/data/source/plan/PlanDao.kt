@@ -14,6 +14,9 @@ interface PlanDao {
     @Query("SELECT * FROM plans WHERE id IN (:planIds)")
     suspend fun loadAllById(planIds: IntArray): List<Plan>
 
+    @Query("SELECT * FROM plans WHERE id IN (:planId)")
+    suspend fun getPlanDetail(planId: Int): Plan
+
     @Upsert
     suspend fun insertPlan(plans: Plan): Long
 
