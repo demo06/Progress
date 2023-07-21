@@ -11,14 +11,12 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import funny.buildapp.progress.data.PlanRepository
 import funny.buildapp.progress.ui.page.home.detail.PlanDetailPage
 import funny.buildapp.progress.ui.page.home.plan.PlanPage
 import funny.buildapp.progress.ui.page.home.newPlan.NewPlanPage
-import funny.buildapp.progress.ui.page.home.newPlan.NewPlanViewModel
-import funny.buildapp.progress.ui.page.schedule.CreateSchedulePage
-import funny.buildapp.progress.ui.page.schedule.SchedulePage
+import funny.buildapp.progress.ui.page.todo.create.CreateTodoPage
 import funny.buildapp.progress.ui.page.todo.TodoPage
+import funny.buildapp.progress.ui.page.todo.list.TodoListPage
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -45,7 +43,7 @@ fun AppNav(navCtrl: NavHostController, padding: PaddingValues) {
         }
         //task
         composable(route = Route.TODO) {
-            TodoPage(navCtrl)
+            TodoListPage(navCtrl)
         }
         //detail
         composable(
@@ -59,21 +57,21 @@ fun AppNav(navCtrl: NavHostController, padding: PaddingValues) {
         }
         //schedule
         composable(route = Route.SCHEDULE) {
-            SchedulePage(navCtrl)
+            TodoPage(navCtrl)
         }
         //schedule
         composable(route = Route.SCHEDULE) {
-            SchedulePage(navCtrl)
+            TodoPage(navCtrl)
         }
         //create schedule
         composable(
-            route = Route.CREATE_SCHEDULE + "/{editMode}",
-            arguments = listOf(navArgument("editMode") {
+            route = Route.CREATE_TODO + "/{id}",
+            arguments = listOf(navArgument("id") {
                 type = NavType.IntType
                 defaultValue = 0
             })
         ) {
-            CreateSchedulePage(navCtrl, it)
+            CreateTodoPage(navCtrl, it)
         }
     }
 }
@@ -84,5 +82,5 @@ object Route {
     const val TODO = "todo"
     const val PLAN_DETAIL = "planDetail"
     const val SCHEDULE = "schedule"
-    const val CREATE_SCHEDULE = "createSchedule"
+    const val CREATE_TODO = "createTodo"
 }

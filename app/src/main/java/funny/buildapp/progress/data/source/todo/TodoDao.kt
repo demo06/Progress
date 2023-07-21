@@ -17,6 +17,9 @@ interface TodoDao {
     @Query("SELECT * FROM todos WHERE id IN (:planId)")
     suspend fun getTodoByPlanId(planId: Int): List<Todo>
 
+    @Query("SELECT * FROM todos WHERE id IN (:todoId)")
+    suspend fun getTodoById(todoId: Int): Todo
+
     @Upsert
     suspend fun insertTodo(todo: Todo): Long
 

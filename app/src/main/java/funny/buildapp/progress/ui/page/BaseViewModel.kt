@@ -28,6 +28,10 @@ abstract class BaseViewModel<T> : ViewModel() {
         }
     }
 
+    fun Any?.toast() {
+        _event.sendEvent(DispatchEvent.ShowToast(this.toString()))
+    }
+
     fun <T> MutableStateFlow<T>.setState(reducer: T.() -> T) {
         this.value = this.value.reducer()
     }
@@ -51,14 +55,18 @@ abstract class BaseViewModel<T> : ViewModel() {
         }
     }
 
-    fun DispatchEvent.executeEvent() {
-        when (this) {
-            is DispatchEvent.ShowToast -> msg.showToast()
-        }
-    }
+//    fun DispatchEvent.executeEvent() {
+//        when (this) {
+//            is DispatchEvent.ShowToast -> msg.showToast()
+//            is DispatchEvent.Back -> {
+//
+//            }
+//        }
+//    }
 }
 
 
 sealed class DispatchEvent {
     class ShowToast(val msg: String) : DispatchEvent()
+    object Back : DispatchEvent()
 }

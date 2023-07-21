@@ -1,5 +1,7 @@
-package funny.buildapp.progress.ui.page.schedule
+package funny.buildapp.progress.ui.page.todo.create
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -9,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -18,7 +21,10 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -30,12 +36,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import funny.buildapp.progress.data.source.plan.Plan
+import funny.buildapp.progress.ui.page.DispatchEvent
+import funny.buildapp.progress.ui.page.home.newPlan.NewPlanAction
 import funny.buildapp.progress.ui.page.home.newPlan.PlanTitle
 import funny.buildapp.progress.ui.page.home.plan.ProgressCard
 import funny.buildapp.progress.ui.page.home.newPlan.TaskItem
+import funny.buildapp.progress.ui.page.route.Route
+import funny.buildapp.progress.ui.page.route.RouteUtils
 import funny.buildapp.progress.ui.page.route.RouteUtils.back
 import funny.buildapp.progress.ui.theme.AppTheme
 import funny.buildapp.progress.ui.theme.backgroundGradient
@@ -43,7 +55,10 @@ import funny.buildapp.progress.ui.theme.cyan
 import funny.buildapp.progress.ui.theme.red
 import funny.buildapp.progress.ui.theme.transparent
 import funny.buildapp.progress.utils.compareDate
+import funny.buildapp.progress.utils.dateToString
+import funny.buildapp.progress.utils.daysBetweenDates
 import funny.buildapp.progress.utils.getCurrentDate
+import funny.buildapp.progress.utils.showToast
 import funny.buildapp.progress.widgets.AppToolsBar
 import funny.buildapp.progress.widgets.CustomBottomSheet
 import funny.buildapp.progress.widgets.FillWidthButton
@@ -52,63 +67,33 @@ import funny.buildapp.progress.widgets.RoundCard
 import funny.buildapp.progress.widgets.SpaceLine
 import funny.buildapp.progress.widgets.SwitchButton
 import kotlinx.coroutines.launch
+import java.nio.file.Files.delete
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun CreateSchedulePage(
+fun CreateTodoPage(
     navCtrl: NavHostController,
     navBackStackEntry: NavBackStackEntry?,
-    modifier: Modifier = Modifier,
+    viewModel: CreateScheduleViewModel = hiltViewModel(),
 ) {
-    val editMode = navBackStackEntry?.arguments?.getInt("editMode")
-    val snackState = remember { SnackbarHostState() }
-    val snackScope = rememberCoroutineScope()
-    var bottomSheet by remember { mutableStateOf(false) }
-    Scaffold(
-        snackbarHost = {
-            SnackbarHost(hostState = snackState)
-        },
-        content = { it ->
-            Box(
-                modifier = modifier
-                    .padding(it)
-                    .fillMaxSize()
-            ) {
-                ScheduleBody(
-                    navCtrl = navCtrl,
-                    dialogConfirm = {
-                        snackScope.launch { snackState.showSnackbar(it) }
-                    },
-                    selectPlan = {
-                        bottomSheet = !bottomSheet
-                    },
-                    isEdit = editMode != 0
-                )
-                CustomBottomSheet(
-                    modifier = Modifier.align(Alignment.BottomCenter),
-                    visible = bottomSheet,
-                    content = {
-                        PlanBottomSheet(
-                            onItemClick = { bottomSheet = !bottomSheet },
-                            onDismiss = { bottomSheet = !bottomSheet })
-                    })
-            }
-        })
-}
-
-@Composable
-fun ScheduleBody(
-    navCtrl: NavHostController,
-    isEdit: Boolean = false,
-    dialogConfirm: (String) -> Unit,
-    selectPlan: () -> Unit = {}
-) {
-    var title by remember { mutableStateOf("") }
+    val id = navBackStackEntry?.arguments?.getInt("id") ?: 0
+    val uiState by viewModel.uiState.collectAsState()
     var openDialog by remember { mutableStateOf(false) }
-    var startTime by remember { mutableStateOf(getCurrentDate()) }
-    var endTime by remember { mutableStateOf(getCurrentDate()) }
-    var dialogState by remember { mutableStateOf(0) }
-    Box(modifier = Modifier.fillMaxSize()) {
+    var dialogState by remember { mutableIntStateOf(0) }
+    LaunchedEffect(Unit) {
+        viewModel.dispatch(CreateScheduleAction.GetTodoDetail(id = id))
+        viewModel.mainEvent.collect {
+            when (it) {
+                is DispatchEvent.ShowToast -> it.msg.showToast()
+                is DispatchEvent.Back -> navCtrl.back()
+            }
+        }
+    }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
         LazyColumn(
             Modifier
                 .fillMaxSize()
@@ -116,7 +101,7 @@ fun ScheduleBody(
         ) {
             item {
                 AppToolsBar(
-                    title = if (isEdit) "编辑日程" else "添加日程",
+                    title = if (id != 0) "编辑日程" else "添加日程",
                     tint = AppTheme.colors.themeUi,
                     backgroundColor = transparent,
                     onBack = { navCtrl.back() },
@@ -124,17 +109,19 @@ fun ScheduleBody(
             }
             item {
                 PlanTitle(
-                    text = title,
+                    text = uiState.title,
                     hint = "请在这里输入日程内容",
                     title = "日程内容",
                     onTextChange = {
-                        title = it
+                        viewModel.dispatch(CreateScheduleAction.SetTitle(it))
                     })
             }
             item {
                 ScheduleDateCard(
-                    startTime = startTime,
-                    endTime = endTime,
+                    startTime = uiState.startDate,
+                    endTime = uiState.targetDate,
+                    isAssociated = uiState.isAssociatePlan,
+                    repeatAble = uiState.repeatable,
                     startTimeClick = {
                         dialogState = 0
                         openDialog = !openDialog
@@ -143,15 +130,26 @@ fun ScheduleBody(
                         dialogState = 1
                         openDialog = !openDialog
                     },
-                    selectPlan = { selectPlan() })
+                    selectPlan = {
+                        viewModel.dispatch(CreateScheduleAction.ChangeBottomSheet)
+                        viewModel.dispatch(CreateScheduleAction.GetPlans)
+                    },
+                    associateChecked = {
+                        viewModel.dispatch(CreateScheduleAction.SetAssociateState)
+                    },
+                    repeatChecked = {
+                        viewModel.dispatch(CreateScheduleAction.SetIsRepeat)
+                    })
             }
             item {
                 FillWidthButton(
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                     text = "保存"
-                ) {}
+                ) {
+                    viewModel.dispatch(CreateScheduleAction.Save)
+                }
             }
-            if (isEdit) {
+            if (id != 0) {
                 item {
                     FillWidthButton(
                         modifier = Modifier.padding(horizontal = 12.dp),
@@ -160,7 +158,9 @@ fun ScheduleBody(
                             containerColor = AppTheme.colors.themeUi.copy(0.2f),
                         ),
                         fontColor = red.copy(0.6f),
-                        onClick = {},
+                        onClick = {
+                            viewModel.dispatch(CreateScheduleAction.Delete)
+                        },
                     )
                 }
             }
@@ -172,20 +172,24 @@ fun ScheduleBody(
                 },
                 onConfirm = {
                     if (dialogState == 0) {
-                        if (compareDate(startTime, it)) {
-                            startTime = it
-                        } else {
-                            dialogConfirm("开始时间不能大于结束时间")
-                        }
+                        viewModel.dispatch(CreateScheduleAction.SetStartDate(it))
                     } else {
-                        if (compareDate(startTime, it)) {
-                            endTime = it
-                        } else {
-                            dialogConfirm("结束时间不能小于开始时间")
-                        }
+                        viewModel.dispatch(CreateScheduleAction.SetTargetDate(it))
                     }
                 })
         }
+        CustomBottomSheet(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            visible = uiState.planBottomSheet,
+            content = {
+                PlanBottomSheet(
+                    onItemClick = { id, title ->
+                        viewModel.dispatch(CreateScheduleAction.SetPlan(id, title))
+                    },
+                    onDismiss = { viewModel.dispatch(CreateScheduleAction.ChangeBottomSheet) },
+                    plans = uiState.plans
+                )
+            })
     }
 }
 
@@ -194,11 +198,14 @@ fun ScheduleBody(
 fun ScheduleDateCard(
     startTime: String,
     endTime: String,
+    isAssociated: Boolean = false,
+    repeatAble: Boolean = false,
     startTimeClick: () -> Unit,
     endTimeClick: () -> Unit = {},
+    associateChecked: () -> Unit = {},
+    repeatChecked: () -> Unit = {},
     selectPlan: () -> Unit = {}
 ) {
-    var checked by remember { mutableStateOf(false) }
     Column(
         modifier = Modifier.padding(horizontal = 4.dp),
         content = {
@@ -216,18 +223,18 @@ fun ScheduleDateCard(
                 TaskItem("关联计划", content = {
                     SwitchButton(
                         modifier = Modifier.height(25.dp),
-                        checked = checked,
-                        onCheckedChange = { checked = it })
+                        checked = isAssociated,
+                        onCheckedChange = { associateChecked() })
                 })
             }
-            AnimatedVisibility(visible = checked) {
+            AnimatedVisibility(visible = isAssociated) {
                 Column {
                     RoundCard {
                         TaskItem("是否在计划内重复", content = {
                             SwitchButton(
                                 modifier = Modifier.height(25.dp),
-                                checked = checked,
-                                onCheckedChange = { checked = it })
+                                checked = repeatAble,
+                                onCheckedChange = { repeatChecked() })
                         })
                     }
                     RoundCard {
@@ -239,9 +246,14 @@ fun ScheduleDateCard(
     )
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun PlanBottomSheet(onItemClick: () -> Unit = {}, onDismiss: () -> Unit = {}) {
+fun PlanBottomSheet(
+    plans: List<Plan>,
+    onItemClick: (Int, String) -> Unit = { id, title -> },
+    onDismiss: () -> Unit = {}
+) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -264,21 +276,21 @@ fun PlanBottomSheet(onItemClick: () -> Unit = {}, onDismiss: () -> Unit = {}) {
                     onRightClick = { onDismiss() },
                 )
             }
-            items(10) {
+            items(plans, key = { it.id }) {
+                val percentage = it.initialValue.toDouble() / it.targetValue.toDouble() * 100
                 ProgressCard(
-                    progress = 27.7,
-                    title = "完全版四级考纲词汇（乱序）",
-                    status = "",
-                    proportion = "1708/6145",
-                    onClick = { onItemClick() }
-                )
+                    progress = String.format("%.1f", percentage).toDouble(),
+                    title = it.title,
+                    status = when (it.status) {
+                        0 -> "未开始"
+                        1 -> "进行中"
+                        2 -> "已完成"
+                        else -> "未知"
+                    },
+                    lastDay = "${daysBetweenDates(getCurrentDate(), it.endDate.dateToString())}",
+                    proportion = "${it.initialValue}/${it.targetValue}",
+                    onClick = { onItemClick(it.id.toInt(), it.title) })
             }
         })
 }
 
-
-@Preview(showBackground = true)
-@Composable
-fun CreateSchedulePreview() {
-    CreateSchedulePage(navCtrl = rememberNavController(), navBackStackEntry = null)
-}

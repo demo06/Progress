@@ -51,6 +51,7 @@ import funny.buildapp.progress.ui.theme.backgroundGradient
 import funny.buildapp.progress.ui.theme.red
 import funny.buildapp.progress.ui.theme.transparent
 import funny.buildapp.progress.ui.theme.white
+import funny.buildapp.progress.utils.showToast
 import funny.buildapp.progress.widgets.AppToolsBar
 import funny.buildapp.progress.widgets.FillWidthButton
 import funny.buildapp.progress.widgets.MyDatePicker
@@ -74,7 +75,11 @@ fun NewPlanPage(
         viewModel.mainEvent.collect {
             when (it) {
                 is DispatchEvent.ShowToast -> {
-                    snackState.showSnackbar(it.msg)
+                    it.msg.showToast()
+                }
+
+                is DispatchEvent.Back -> {
+                    navCtrl.back()
                 }
             }
         }
@@ -157,7 +162,6 @@ fun NewPlanPage(
                     text = "保存"
                 ) {
                     viewModel.dispatch(NewPlanAction.Save)
-                    navCtrl.back()
                 }
             }
             if (isEditMode) {
@@ -171,7 +175,6 @@ fun NewPlanPage(
                         fontColor = red.copy(0.6f),
                         onClick = {
                             viewModel.dispatch(NewPlanAction.Delete)
-                            navCtrl.back()
                         },
                     )
                 }

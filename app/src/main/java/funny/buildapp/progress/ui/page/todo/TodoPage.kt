@@ -1,117 +1,124 @@
 package funny.buildapp.progress.ui.page.todo
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.CheckCircle
-import androidx.compose.material.icons.rounded.RadioButtonUnchecked
-import androidx.compose.material3.Icon
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import funny.buildapp.progress.ui.page.home.plan.ScheduleToolBar
+import funny.buildapp.progress.ui.page.route.Route
+import funny.buildapp.progress.ui.page.route.RouteUtils
 import funny.buildapp.progress.ui.theme.AppTheme
-import funny.buildapp.progress.widgets.clickWithoutWave
+import funny.buildapp.progress.ui.theme.themeColor
+import funny.buildapp.progress.ui.theme.white
 
 @Composable
 fun TodoPage(navCtrl: NavHostController) {
-    var selected by remember { mutableStateOf(false) }
-    LazyColumn(
-        Modifier
+    Box(
+        modifier = Modifier
             .fillMaxSize()
-            .background(AppTheme.colors.themeUi.copy(0.2f))
+            .background(themeColor.copy(0.2f))
     ) {
-        item {
-            ScheduleToolBar(title = "今日待办")
+        Column(
+            Modifier
+                .fillMaxSize()
+                .background(white),
+        ) {
+            DatePane()
+            ScheduleCard(onItemClick = {
+                RouteUtils.navTo(
+                    navCtrl = navCtrl,
+                    destinationName = Route.CREATE_TODO,
+                    args = 1,
+                )
+            })
         }
-        items(10) {
-            TodoItem(title = "完全版四级考纲词汇（乱序）",
-                selected = selected, onClick = {
-                    selected = !selected
-                })
-        }
-        item {
-            Label()
-        }
-        items(10) {
-            TodoItem(title = "完全版四级考纲词汇（乱序）", selected = true, onClick = {})
-        }
+
     }
+
 }
 
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TodoItem(
-    title: String,
-    selected: Boolean = false,
-    onClick: () -> Unit = {},
-    backgroundColor: Color = Color.White,
-) {
-    Row(
-        Modifier
-            .padding(vertical = 4.dp, horizontal = 8.dp)
+fun DatePane() {
+    val datePickerState = rememberDatePickerState()
+    DatePicker(
+        modifier = Modifier
             .fillMaxWidth()
-            .background(backgroundColor, RoundedCornerShape(4.dp))
-            .clickWithoutWave { onClick() }
-            .padding(12.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            imageVector = if (selected) Icons.Rounded.CheckCircle else Icons.Rounded.RadioButtonUnchecked,
-            contentDescription = "icon",
-            tint = if (selected) AppTheme.colors.themeUi else Color.Gray
+            .background(AppTheme.colors.themeUi.copy(0.2f)),
+        state = datePickerState,
+        headline = null,
+        title = null,
+        showModeToggle = false,
+        colors = DatePickerDefaults.colors(
+            currentYearContentColor = AppTheme.colors.themeUi,
+            selectedYearContainerColor = AppTheme.colors.themeUi,
+            selectedDayContainerColor = AppTheme.colors.themeUi,
+            todayContentColor = AppTheme.colors.themeUi.copy(0.8f),
+            todayDateBorderColor = AppTheme.colors.themeUi.copy(0.8f),
         )
-        Text(
-            modifier = Modifier.padding(start = 8.dp),
-            text = title,
-            textDecoration = if (selected) TextDecoration.LineThrough else null,
-            color = if (selected) Color.Gray else Color.Unspecified
-        )
-    }
+    )
 }
 
 
 @Composable
-fun Label() {
+fun ScheduleCard(onItemClick: () -> Unit) {
+    LazyColumn(
+        modifier = Modifier
+            .background(white)
+            .fillMaxWidth(),
+    ) {
+        items(20) {
+            ScheduleItem("完全版四级考纲词汇（乱序）") {
+                onItemClick()
+            }
+        }
+    }
+}
+
+@Composable
+fun ScheduleItem(text: String, onItemClick: () -> Unit = {}) {
     Column(
-        Modifier
-            .padding(vertical = 4.dp, horizontal = 8.dp)
-            .background(AppTheme.colors.themeUi.copy(0.8f), RoundedCornerShape(6.dp))
-            .clickWithoutWave { }
-            .padding(horizontal = 4.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onItemClick() }
     ) {
         Text(
-            modifier = Modifier.padding(horizontal = 6.dp),
-            text = "已完成",
+            text = text,
             fontWeight = FontWeight.Bold,
-            color = AppTheme.colors.textThird,
+            fontSize = 16.sp,
+            modifier = Modifier.padding(16.dp)
+        )
+        Spacer(
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .background(AppTheme.colors.divider)
+                .fillMaxWidth()
+                .height(1.dp)
         )
     }
+
 }
 
 @Preview(showBackground = true)
 @Composable
-fun TaskPagePreview() {
+fun SchedulePreview() {
     TodoPage(navCtrl = rememberNavController())
 }

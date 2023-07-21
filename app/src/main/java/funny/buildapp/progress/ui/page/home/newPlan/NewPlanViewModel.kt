@@ -60,15 +60,15 @@ class NewPlanViewModel @Inject constructor(private val repo: PlanRepository) :
 
     private fun checkParams(): Boolean {
         if (_uiState.value.title.isEmpty()) {
-            "标题不能为空".showToast()
+            "标题不能为空".toast()
             return false
         }
         if (!compareDate(_uiState.value.startTime, _uiState.value.endTime)) {
-            "结束时间不能早于开始时间".showToast()
+            "结束时间不能早于开始时间".toast()
             return false
         }
         if (_uiState.value.initialValue > _uiState.value.targetValue) {
-            "初始值不能大于目标值".showToast()
+            "初始值不能大于目标值".toast()
             return false
         }
         return true
@@ -92,13 +92,14 @@ class NewPlanViewModel @Inject constructor(private val repo: PlanRepository) :
             },
             onSuccess = {
                 if (it > 0) {
-                    "保存成功".showToast()
+                    "保存成功".toast()
+                    _event.sendEvent(DispatchEvent.Back)
                 } else {
-                    "保存失败".showToast()
+                    "保存失败".toast()
                 }
             },
             onFailed = {
-                "保存失败".showToast()
+                "保存失败".toast()
             }
         )
     }
@@ -108,13 +109,14 @@ class NewPlanViewModel @Inject constructor(private val repo: PlanRepository) :
             request = { repo.delete(_uiState.value.id) },
             onSuccess = {
                 if (it > 0) {
-                    "删除成功".showToast()
+                    "删除成功".toast()
+                    _event.sendEvent(DispatchEvent.Back)
                 } else {
-                    "删除失败".showToast()
+                    "删除失败".toast()
                 }
             },
             onFailed = {
-                "删除失败".showToast()
+                "删除失败".toast()
             }
         )
 
