@@ -171,7 +171,7 @@ fun NewPlanPage(
                         fontColor = red.copy(0.6f),
                         onClick = {
                             viewModel.dispatch(NewPlanAction.Delete)
-//                            navCtrl.back()
+                            navCtrl.back()
                         },
                     )
                 }

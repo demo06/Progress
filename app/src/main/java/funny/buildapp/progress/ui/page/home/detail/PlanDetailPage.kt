@@ -2,8 +2,8 @@ package funny.buildapp.progress.ui.page.home.detail
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,18 +38,17 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
-import funny.buildapp.progress.data.PlanRepository
 import funny.buildapp.progress.data.source.todo.Todo
 import funny.buildapp.progress.ui.page.home.newPlan.NewPlanPage
-import funny.buildapp.progress.ui.page.home.newPlan.NewPlanViewModel
-import funny.buildapp.progress.ui.page.home.plan.ProgressCard
+import funny.buildapp.progress.ui.page.route.Route
+import funny.buildapp.progress.ui.page.route.RouteUtils
 import funny.buildapp.progress.ui.page.route.RouteUtils.back
 import funny.buildapp.progress.ui.page.todo.TodoItem
 import funny.buildapp.progress.ui.theme.AppTheme
 import funny.buildapp.progress.ui.theme.black
-import funny.buildapp.progress.ui.theme.cyan
 import funny.buildapp.progress.ui.theme.themeColor
 import funny.buildapp.progress.ui.theme.transparent
+import funny.buildapp.progress.ui.theme.white
 import funny.buildapp.progress.utils.dateToString
 import funny.buildapp.progress.utils.daysBetweenDates
 import funny.buildapp.progress.utils.getCurrentDate
@@ -98,7 +95,9 @@ fun PlanDetailPage(
                 surplus = "${daysBetweenDates(getCurrentDate(), plan.endDate.dateToString())}",
                 delay = "0"
             )
-            Schedule(todos)
+            Schedule(todos, noDataClick = {
+                RouteUtils.navTo(navCtrl, Route.CREATE_SCHEDULE, 0)
+            })
         }
         CustomBottomSheet(
             modifier = Modifier
@@ -210,58 +209,40 @@ fun DetailContent(
 }
 
 @Composable
-fun Schedule(todos: List<Todo>) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        items(
-            items = todos,
-            key = { it.id },
-            itemContent = {
-                TodoItem(
-                    selected = false,
-                    title = "完全版四级考纲词汇（乱序）",
-                )
-            }
-        )
-    }
-}
-
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun EditPlanSheet(onDismiss: () -> Unit = {}, onItemClick: () -> Unit = {}) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(top = 50.dp)
-            .clip(
-                RoundedCornerShape(
-                    topStart = 16.dp,
-                    topEnd = 16.dp,
-                    bottomStart = 0.dp,
-                    bottomEnd = 0.dp
-                )
+fun Schedule(todos: List<Todo>, noDataClick: (() -> Unit?)? = null) {
+    if (todos.isNotEmpty()) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            items(
+                items = todos,
+                key = { it.id },
+                itemContent = {
+                    TodoItem(
+                        selected = false,
+                        title = "完全版四级考纲词汇（乱序）",
+                    )
+                }
             )
-            .background(cyan),
-        content = {
-            stickyHeader {
-                AppToolsBar(
-                    title = "编辑计划",
-                    backgroundColor = cyan,
-                    imageVector = Icons.Default.Close,
-                    onRightClick = { onDismiss() },
-                )
-            }
-            items(10) {
-                ProgressCard(
-                    progress = 27.7,
-                    title = "完全版四级考纲词汇（乱序）",
-                    status = "",
-                    proportion = "1708/6145",
-                    onClick = { onItemClick() }
-                )
-            }
-        })
+        }
+    } else {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 2.dp, bottom = 8.dp, start = 8.dp, end = 8.dp)
+                .background(white, shape = RoundedCornerShape(8.dp)),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "赶快去添加日程吧！~",
+                modifier = Modifier
+                    .clickable { noDataClick?.invoke() }
+                    .background(themeColor, RoundedCornerShape(4.dp))
+                    .padding(horizontal = 16.dp, vertical = 6.dp),
+                color = white,
+            )
+        }
+    }
 }

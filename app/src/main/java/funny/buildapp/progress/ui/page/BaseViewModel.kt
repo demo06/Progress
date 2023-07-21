@@ -45,7 +45,8 @@ abstract class BaseViewModel<T> : ViewModel() {
                     onFailed("获取信息失败")
                 }
                 .collect {
-                    onSuccess(it)
+                    if (it == null) onFailed("获取信息失败")
+                    else onSuccess(it)
                 }
         }
     }

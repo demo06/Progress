@@ -11,9 +11,11 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import funny.buildapp.progress.data.PlanRepository
 import funny.buildapp.progress.ui.page.home.detail.PlanDetailPage
 import funny.buildapp.progress.ui.page.home.plan.PlanPage
 import funny.buildapp.progress.ui.page.home.newPlan.NewPlanPage
+import funny.buildapp.progress.ui.page.home.newPlan.NewPlanViewModel
 import funny.buildapp.progress.ui.page.schedule.CreateSchedulePage
 import funny.buildapp.progress.ui.page.schedule.SchedulePage
 import funny.buildapp.progress.ui.page.todo.TodoPage
@@ -39,7 +41,7 @@ fun AppNav(navCtrl: NavHostController, padding: PaddingValues) {
             })
         ) {
             val id = it.arguments?.getInt("id") ?: 0
-            NewPlanPage(navCtrl, id)
+            NewPlanPage(navCtrl = navCtrl, id = id)
         }
         //task
         composable(route = Route.TODO) {
