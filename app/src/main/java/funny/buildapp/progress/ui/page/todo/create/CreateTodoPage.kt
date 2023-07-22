@@ -7,6 +7,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -117,29 +118,75 @@ fun CreateTodoPage(
                     })
             }
             item {
-                ScheduleDateCard(
-                    startTime = uiState.startDate,
-                    endTime = uiState.targetDate,
-                    isAssociated = uiState.isAssociatePlan,
-                    repeatAble = uiState.repeatable,
-                    startTimeClick = {
+                Text(
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                    text = "日程设置",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                )
+            }
+            item {
+                RoundCard {
+                    TaskItem("执行时间", uiState.startDate) {
                         dialogState = 0
                         openDialog = !openDialog
-                    },
-                    endTimeClick = {
+                    }
+                    SpaceLine()
+                    TaskItem("结束时间", uiState.targetDate) {
                         dialogState = 1
                         openDialog = !openDialog
-                    },
-                    selectPlan = {
-                        viewModel.dispatch(CreateScheduleAction.ChangeBottomSheet)
-                        viewModel.dispatch(CreateScheduleAction.GetPlans)
-                    },
-                    associateChecked = {
-                        viewModel.dispatch(CreateScheduleAction.SetAssociateState)
-                    },
-                    repeatChecked = {
-                        viewModel.dispatch(CreateScheduleAction.SetIsRepeat)
+                    }
+                    SpaceLine()
+                    TaskItem("关联计划", content = {
+                        SwitchButton(
+                            modifier = Modifier.height(25.dp),
+                            checked = uiState.isAssociatePlan,
+                            onCheckedChange = {
+                                viewModel.dispatch(CreateScheduleAction.SetAssociateState)
+                            })
                     })
+                }
+            }
+            item {
+                Column {
+                    AnimatedVisibility(visible = uiState.isAssociatePlan) {
+                        Column {
+                            RoundCard {
+                                TaskItem("是否在计划内重复", content = {
+                                    SwitchButton(
+                                        modifier = Modifier.height(25.dp),
+                                        checked = uiState.repeatable,
+                                        onCheckedChange = {
+                                            viewModel.dispatch(
+                                                CreateScheduleAction.SetIsRepeat
+                                            )
+                                        })
+                                })
+                            }
+                            if (uiState.associateId != 0) {
+                                RoundCard {
+                                    TaskItem(
+                                        uiState.planTitle,
+                                        content = {
+                                            Text(
+                                                text = "当前进度：${uiState.progress}%",
+                                                fontSize = 14.sp,
+                                                color = AppTheme.colors.themeUi,
+                                                modifier = Modifier.padding(end = 8.dp)
+                                            )
+                                        },
+                                        onItemClick = { viewModel.dispatch(CreateScheduleAction.GetPlans) })
+                                }
+                            }
+                            RoundCard {
+                                TaskItem(
+                                    "选择计划...",
+                                    content = { },
+                                    onItemClick = { viewModel.dispatch(CreateScheduleAction.GetPlans) })
+                            }
+                        }
+                    }
+                }
             }
             item {
                 FillWidthButton(
@@ -183,8 +230,8 @@ fun CreateTodoPage(
             visible = uiState.planBottomSheet,
             content = {
                 PlanBottomSheet(
-                    onItemClick = { id, title ->
-                        viewModel.dispatch(CreateScheduleAction.SetPlan(id, title))
+                    onItemClick = { id, title, progress ->
+                        viewModel.dispatch(CreateScheduleAction.SetPlan(id, title, progress))
                     },
                     onDismiss = { viewModel.dispatch(CreateScheduleAction.ChangeBottomSheet) },
                     plans = uiState.plans
@@ -194,64 +241,12 @@ fun CreateTodoPage(
 }
 
 
-@Composable
-fun ScheduleDateCard(
-    startTime: String,
-    endTime: String,
-    isAssociated: Boolean = false,
-    repeatAble: Boolean = false,
-    startTimeClick: () -> Unit,
-    endTimeClick: () -> Unit = {},
-    associateChecked: () -> Unit = {},
-    repeatChecked: () -> Unit = {},
-    selectPlan: () -> Unit = {}
-) {
-    Column(
-        modifier = Modifier.padding(horizontal = 4.dp),
-        content = {
-            Text(
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                text = "日程设置",
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-            )
-            RoundCard {
-                TaskItem("执行时间", startTime) { startTimeClick() }
-                SpaceLine()
-                TaskItem("结束时间", endTime) { endTimeClick() }
-                SpaceLine()
-                TaskItem("关联计划", content = {
-                    SwitchButton(
-                        modifier = Modifier.height(25.dp),
-                        checked = isAssociated,
-                        onCheckedChange = { associateChecked() })
-                })
-            }
-            AnimatedVisibility(visible = isAssociated) {
-                Column {
-                    RoundCard {
-                        TaskItem("是否在计划内重复", content = {
-                            SwitchButton(
-                                modifier = Modifier.height(25.dp),
-                                checked = repeatAble,
-                                onCheckedChange = { repeatChecked() })
-                        })
-                    }
-                    RoundCard {
-                        TaskItem("选择计划...", content = { }, onItemClick = { selectPlan() })
-                    }
-                }
-            }
-        }
-    )
-}
-
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PlanBottomSheet(
     plans: List<Plan>,
-    onItemClick: (Int, String) -> Unit = { id, title -> },
+    onItemClick: (Int, String, Double) -> Unit = { id, title, double -> },
     onDismiss: () -> Unit = {}
 ) {
     LazyColumn(
@@ -289,7 +284,13 @@ fun PlanBottomSheet(
                     },
                     lastDay = "${daysBetweenDates(getCurrentDate(), it.endDate.dateToString())}",
                     proportion = "${it.initialValue}/${it.targetValue}",
-                    onClick = { onItemClick(it.id.toInt(), it.title) })
+                    onClick = {
+                        onItemClick(
+                            it.id.toInt(),
+                            it.title,
+                            String.format("%.1f", percentage).toDouble()
+                        )
+                    })
             }
         })
 }

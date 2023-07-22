@@ -36,16 +36,17 @@ class CreateScheduleViewModel @Inject constructor(
             is CreateScheduleAction.SetTargetDate -> setTargetDate(action.time)
             is CreateScheduleAction.SetAssociateState -> setAssociateState()
             is CreateScheduleAction.SetIsRepeat -> setIsRepeat()
-            is CreateScheduleAction.SetPlan -> setPlan(action.id, action.title)
+            is CreateScheduleAction.SetPlan -> setPlan(action.id, action.title, action.progress)
             is CreateScheduleAction.SetTitle -> setTitle(action.title)
         }
     }
 
-    private fun setPlan(id: Int, title: String) {
+    private fun setPlan(id: Int, title: String, progress: Double) {
         _uiState.setState {
             copy(
                 associateId = id,
                 planTitle = title,
+                progress = progress,
                 planBottomSheet = false
             )
         }
@@ -58,7 +59,8 @@ class CreateScheduleViewModel @Inject constructor(
             onSuccess = {
                 _uiState.setState {
                     copy(
-                        plans = it
+                        plans = it,
+                        planBottomSheet = true
                     )
                 }
             }
@@ -190,6 +192,7 @@ data class CreateScheduleState(
     val isAssociatePlan: Boolean = false,
     val repeatable: Boolean = false,
     val associateId: Int = 0,
+    val progress: Double = 0.0,
     val planBottomSheet: Boolean = false,
     val planTitle: String = "",
     val plans: List<Plan> = emptyList(),
@@ -207,5 +210,5 @@ sealed class CreateScheduleAction {
     class SetTargetDate(val time: String) : CreateScheduleAction()
     object SetAssociateState : CreateScheduleAction()
     object SetIsRepeat : CreateScheduleAction()
-    class SetPlan(val id: Int, val title: String) : CreateScheduleAction()
+    class SetPlan(val id: Int, val title: String, val progress: Double) : CreateScheduleAction()
 }
