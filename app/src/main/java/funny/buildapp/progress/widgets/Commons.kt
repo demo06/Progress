@@ -32,19 +32,19 @@ import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Sailing
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.DatePicker
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
@@ -92,9 +92,6 @@ import funny.buildapp.progress.ui.theme.orange
 import funny.buildapp.progress.ui.theme.orange1
 import funny.buildapp.progress.ui.theme.themeColor
 import funny.buildapp.progress.ui.theme.white
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 
 data class TabTitle(
@@ -215,7 +212,6 @@ fun NavigationItem(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OutLineEdit(
     modifier: Modifier = Modifier,
@@ -261,7 +257,7 @@ fun OutLineEdit(
             }
 
         },
-        colors = TextFieldDefaults.outlinedTextFieldColors(
+        colors = OutlinedTextFieldDefaults.colors(
             cursorColor = themeColor,
             unfocusedBorderColor = grey1,
             focusedBorderColor = themeColor
@@ -522,8 +518,9 @@ fun <T> LazyListScope.gridItems(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyDatePicker(
+    isStartTime: Boolean = true,
     onDismiss: () -> Unit,
-    onConfirm: (String) -> Unit
+    onConfirm: (Long) -> Unit
 ) {
     val datePickerState = rememberDatePickerState()
     val confirmEnabled by remember {
@@ -537,10 +534,11 @@ fun MyDatePicker(
                     onDismiss()
                     onConfirm.invoke(
                         datePickerState.selectedDateMillis?.let {
-                            val date = Date(it)
-                            val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                            format.format(date)
-                        } ?: ""
+                            val utcTime = 8 * 60 * 60 * 1000
+                            val oneDay = 24 * 60 * 60 * 1000 - 1000
+                            val longTime = if (isStartTime) it - utcTime else it - utcTime + oneDay
+                            longTime
+                        } ?: 0
                     )
                 },
                 enabled = confirmEnabled

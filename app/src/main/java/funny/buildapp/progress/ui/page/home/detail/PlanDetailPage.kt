@@ -92,7 +92,12 @@ fun PlanDetailPage(
                 endTime = plan.endDate.dateToString(),
                 progress = String.format("%.1f", percentage).toDouble(),
                 proportion = "${plan.initialValue}/${plan.targetValue}",
-                surplus = "${daysBetweenDates(getCurrentDate(), plan.endDate.dateToString())}",
+                surplus = "${
+                    daysBetweenDates(
+                        getCurrentDate().dateToString(),
+                        plan.endDate.dateToString()
+                    )
+                }",
                 delay = "0"
             )
             Schedule(todos, noDataClick = {

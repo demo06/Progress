@@ -10,7 +10,6 @@ import funny.buildapp.progress.ui.page.DispatchEvent
 import funny.buildapp.progress.utils.compareDate
 import funny.buildapp.progress.utils.dateToString
 import funny.buildapp.progress.utils.getCurrentDate
-import funny.buildapp.progress.utils.stringToDate
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
@@ -75,8 +74,8 @@ class CreateScheduleViewModel @Inject constructor(
                     copy(
                         id = it.id.toInt(),
                         title = it.title,
-                        startDate = it.startDate.dateToString(),
-                        targetDate = it.endDate.dateToString(),
+                        startDate = it.startDate,
+                        targetDate = it.endDate,
                         isAssociatePlan = it.isAssociatePlan,
                         associateId = it.associateId,
                         repeatable = it.repeatable
@@ -91,7 +90,11 @@ class CreateScheduleViewModel @Inject constructor(
             "标题不能为空".toast()
             return false
         }
-        if (!compareDate(_uiState.value.startDate, _uiState.value.targetDate)) {
+        if (!compareDate(
+                _uiState.value.startDate.dateToString(),
+                _uiState.value.targetDate.dateToString()
+            )
+        ) {
             "结束时间不能早于开始时间".toast()
             return false
         }
@@ -110,8 +113,8 @@ class CreateScheduleViewModel @Inject constructor(
                     Todo(
                         id = _uiState.value.id.toLong(),
                         title = _uiState.value.title,
-                        startDate = _uiState.value.startDate.stringToDate(),
-                        endDate = _uiState.value.targetDate.stringToDate(),
+                        startDate = _uiState.value.startDate,
+                        endDate = _uiState.value.targetDate,
                         isAssociatePlan = _uiState.value.isAssociatePlan,
                         associateId = _uiState.value.associateId,
                         repeatable = _uiState.value.repeatable,
@@ -156,11 +159,11 @@ class CreateScheduleViewModel @Inject constructor(
         _uiState.setState { copy(title = title) }
     }
 
-    private fun setStartDate(time: String) {
+    private fun setStartDate(time: Long) {
         _uiState.setState { copy(startDate = time) }
     }
 
-    private fun setTargetDate(time: String) {
+    private fun setTargetDate(time: Long) {
         _uiState.setState { copy(targetDate = time) }
     }
 
@@ -187,8 +190,8 @@ class CreateScheduleViewModel @Inject constructor(
 data class CreateScheduleState(
     val id: Int = 0,
     val title: String = "",
-    val startDate: String = getCurrentDate(),
-    val targetDate: String = getCurrentDate(),
+    val startDate: Long = getCurrentDate(),
+    val targetDate: Long = getCurrentDate(),
     val isAssociatePlan: Boolean = false,
     val repeatable: Boolean = false,
     val associateId: Int = 0,
@@ -206,8 +209,8 @@ sealed class CreateScheduleAction {
     object GetPlans : CreateScheduleAction()
     class GetTodoDetail(val id: Int) : CreateScheduleAction()
     class SetTitle(val title: String) : CreateScheduleAction()
-    class SetStartDate(val time: String) : CreateScheduleAction()
-    class SetTargetDate(val time: String) : CreateScheduleAction()
+    class SetStartDate(val time: Long) : CreateScheduleAction()
+    class SetTargetDate(val time: Long) : CreateScheduleAction()
     object SetAssociateState : CreateScheduleAction()
     object SetIsRepeat : CreateScheduleAction()
     class SetPlan(val id: Int, val title: String, val progress: Double) : CreateScheduleAction()

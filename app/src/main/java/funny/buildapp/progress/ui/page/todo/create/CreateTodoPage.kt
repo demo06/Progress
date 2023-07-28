@@ -7,7 +7,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,9 +16,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,34 +24,27 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import funny.buildapp.progress.data.source.plan.Plan
 import funny.buildapp.progress.ui.page.DispatchEvent
-import funny.buildapp.progress.ui.page.home.newPlan.NewPlanAction
 import funny.buildapp.progress.ui.page.home.newPlan.PlanTitle
-import funny.buildapp.progress.ui.page.home.plan.ProgressCard
 import funny.buildapp.progress.ui.page.home.newPlan.TaskItem
-import funny.buildapp.progress.ui.page.route.Route
-import funny.buildapp.progress.ui.page.route.RouteUtils
+import funny.buildapp.progress.ui.page.home.plan.ProgressCard
 import funny.buildapp.progress.ui.page.route.RouteUtils.back
 import funny.buildapp.progress.ui.theme.AppTheme
 import funny.buildapp.progress.ui.theme.backgroundGradient
 import funny.buildapp.progress.ui.theme.cyan
 import funny.buildapp.progress.ui.theme.red
 import funny.buildapp.progress.ui.theme.transparent
-import funny.buildapp.progress.utils.compareDate
 import funny.buildapp.progress.utils.dateToString
 import funny.buildapp.progress.utils.daysBetweenDates
 import funny.buildapp.progress.utils.getCurrentDate
@@ -67,8 +56,6 @@ import funny.buildapp.progress.widgets.MyDatePicker
 import funny.buildapp.progress.widgets.RoundCard
 import funny.buildapp.progress.widgets.SpaceLine
 import funny.buildapp.progress.widgets.SwitchButton
-import kotlinx.coroutines.launch
-import java.nio.file.Files.delete
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -127,12 +114,12 @@ fun CreateTodoPage(
             }
             item {
                 RoundCard {
-                    TaskItem("执行时间", uiState.startDate) {
+                    TaskItem("执行时间", uiState.startDate.dateToString()) {
                         dialogState = 0
                         openDialog = !openDialog
                     }
                     SpaceLine()
-                    TaskItem("结束时间", uiState.targetDate) {
+                    TaskItem("结束时间", uiState.targetDate.dateToString()) {
                         dialogState = 1
                         openDialog = !openDialog
                     }
@@ -214,6 +201,7 @@ fun CreateTodoPage(
         }
         if (openDialog) {
             MyDatePicker(
+                isStartTime = dialogState == 0,
                 onDismiss = {
                     openDialog = !openDialog
                 },
@@ -246,7 +234,7 @@ fun CreateTodoPage(
 @Composable
 fun PlanBottomSheet(
     plans: List<Plan>,
-    onItemClick: (Int, String, Double) -> Unit = { id, title, double -> },
+    onItemClick: (Int, String, Double) -> Unit = { _, _, _ -> },
     onDismiss: () -> Unit = {}
 ) {
     LazyColumn(
@@ -282,7 +270,12 @@ fun PlanBottomSheet(
                         2 -> "已完成"
                         else -> "未知"
                     },
-                    lastDay = "${daysBetweenDates(getCurrentDate(), it.endDate.dateToString())}",
+                    lastDay = "${
+                        daysBetweenDates(
+                            getCurrentDate().dateToString(),
+                            it.endDate.dateToString()
+                        )
+                    }",
                     proportion = "${it.initialValue}/${it.targetValue}",
                     onClick = {
                         onItemClick(

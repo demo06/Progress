@@ -25,7 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -36,14 +36,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.text.isDigitsOnly
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import funny.buildapp.progress.ui.page.DispatchEvent
 import funny.buildapp.progress.ui.page.route.RouteUtils.back
 import funny.buildapp.progress.ui.theme.AppTheme
@@ -51,6 +48,7 @@ import funny.buildapp.progress.ui.theme.backgroundGradient
 import funny.buildapp.progress.ui.theme.red
 import funny.buildapp.progress.ui.theme.transparent
 import funny.buildapp.progress.ui.theme.white
+import funny.buildapp.progress.utils.dateToString
 import funny.buildapp.progress.utils.showToast
 import funny.buildapp.progress.widgets.AppToolsBar
 import funny.buildapp.progress.widgets.FillWidthButton
@@ -69,7 +67,7 @@ fun NewPlanPage(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val snackState = remember { SnackbarHostState() }
-    var dialogState by remember { mutableStateOf(0) }
+    var dialogState by remember { mutableIntStateOf(0) }
     LaunchedEffect(Unit) {
         viewModel.dispatch(NewPlanAction.GetPlanDetail(id = id))
         viewModel.mainEvent.collect {
@@ -134,8 +132,8 @@ fun NewPlanPage(
             }
             item {
                 DateCard(
-                    startTime = uiState.startTime,
-                    endTime = uiState.endTime,
+                    startTime = uiState.startTime.dateToString(),
+                    endTime = uiState.endTime.dateToString(),
                     startTimeClick = {
                         dialogState = 0
                         viewModel.dispatch(NewPlanAction.SetDialogState)
@@ -183,6 +181,7 @@ fun NewPlanPage(
         }
         if (uiState.datePickerDialog) {
             MyDatePicker(
+                isStartTime = dialogState == 0,
                 onDismiss = {
                     viewModel.dispatch(NewPlanAction.SetDialogState)
                 },

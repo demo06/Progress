@@ -77,7 +77,12 @@ fun PlanPage(navCtrl: NavHostController, viewModel: PlanViewModel = hiltViewMode
                         2 -> "已完成"
                         else -> "未知"
                     },
-                    lastDay = "${daysBetweenDates(getCurrentDate(), it.endDate.dateToString())}",
+                    lastDay = "${
+                        daysBetweenDates(
+                            getCurrentDate().dateToString(),
+                            it.endDate.dateToString()
+                        )
+                    }",
                     proportion = "${it.initialValue}/${it.targetValue}",
                     onClick = { RouteUtils.navTo(navCtrl, Route.PLAN_DETAIL, it.id) }
                 )
