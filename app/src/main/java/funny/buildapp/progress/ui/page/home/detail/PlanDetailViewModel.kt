@@ -29,7 +29,7 @@ class PlanDetailViewModel @Inject constructor(
 
     private fun getPlanDetail(id: Int) {
         fetchData(
-            request = { repo.getPlanDetail(id) },
+            request = { repo.getPlanDetail(id.toLong()) },
             onSuccess = {
                 _uiState.setState { copy(plan = it) }
                 dispatch(PlanDetailAction.GetTodos(id))

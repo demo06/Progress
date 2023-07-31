@@ -23,8 +23,13 @@ fun Long.dateToString(): String {
     return format.format(this)
 }
 
-fun getCurrentDate(): Long {
-    return System.currentTimeMillis()
+fun getCurrentDate(isDayOfStart: Boolean = true): Long {
+    return if (isDayOfStart) {
+        System.currentTimeMillis().dateToString().stringToDate().time
+    } else {
+        System.currentTimeMillis().dateToString().stringToDate().time + 24 * 60 * 60 * 1000 - 1000
+    }
+
 }
 
 @RequiresApi(Build.VERSION_CODES.O)

@@ -2,6 +2,7 @@ package funny.buildapp.progress.ui.page.todo
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import funny.buildapp.progress.data.TodoRepository
+import funny.buildapp.progress.data.source.relation.TodoWithPlan
 import funny.buildapp.progress.data.source.todo.Todo
 import funny.buildapp.progress.ui.page.BaseViewModel
 import funny.buildapp.progress.ui.page.DispatchEvent
@@ -26,7 +27,6 @@ class TodoViewModel @Inject constructor(private val repo: TodoRepository) :
         fetchData(
             request = { repo.getTodoByDate(date) },
             onSuccess = {
-                it.loge()
                 _uiState.setState {
                     copy(todos = it)
                 }

@@ -1,5 +1,6 @@
 package funny.buildapp.progress.ui.page.todo.create
 
+import android.icu.util.UniversalTimeScale.toLong
 import dagger.hilt.android.lifecycle.HiltViewModel
 import funny.buildapp.progress.data.PlanRepository
 import funny.buildapp.progress.data.TodoRepository
@@ -10,6 +11,7 @@ import funny.buildapp.progress.ui.page.DispatchEvent
 import funny.buildapp.progress.utils.compareDate
 import funny.buildapp.progress.utils.dateToString
 import funny.buildapp.progress.utils.getCurrentDate
+import funny.buildapp.progress.utils.loge
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
@@ -28,107 +30,93 @@ class CreateScheduleViewModel @Inject constructor(
             is CreateScheduleAction.SendEvent -> _event.sendEvent(action.event)
             is CreateScheduleAction.ChangeBottomSheet -> setDialogState()
             is CreateScheduleAction.GetTodoDetail -> getTodoDetail(action.id)
-            is CreateScheduleAction.GetPlans -> getPlanDetail()
-            is CreateScheduleAction.Save -> saveSchedule()
+            is CreateScheduleAction.GetPlans -> getPlans()
+            is CreateScheduleAction.Save -> saveTodo()
             is CreateScheduleAction.Delete -> delete()
             is CreateScheduleAction.SetStartDate -> setStartDate(action.time)
             is CreateScheduleAction.SetTargetDate -> setTargetDate(action.time)
             is CreateScheduleAction.SetAssociateState -> setAssociateState()
             is CreateScheduleAction.SetIsRepeat -> setIsRepeat()
-            is CreateScheduleAction.SetPlan -> setPlan(action.id, action.title, action.progress)
+            is CreateScheduleAction.SetPlan -> setPlan(action.id)
             is CreateScheduleAction.SetTitle -> setTitle(action.title)
         }
     }
 
-    private fun setPlan(id: Int, title: String, progress: Double) {
-        _uiState.setState {
-            copy(
-                associateId = id,
-                planTitle = title,
-                progress = progress,
-                planBottomSheet = false
-            )
-        }
-    }
-
-
-    private fun getPlanDetail() {
+    private fun setPlan(id: Long) {
         fetchData(
-            request = { planRepo.getAll() },
+            request = { planRepo.getPlanDetail(id) },
             onSuccess = {
                 _uiState.setState {
                     copy(
-                        plans = it,
-                        planBottomSheet = true
+                        todo = todo.copy(associateId = id.toInt()),
+                        plan = it,
+                        planBottomSheet = false,
+                        startTime = _uiState.value.todo.startDate,
+                        endTime = _uiState.value.todo.endDate,
                     )
                 }
             }
         )
     }
 
-    private fun getTodoDetail(id: Int) {
+
+    private fun getPlans() {
+        fetchData(
+            request = { planRepo.getAll() },
+            onSuccess = { _uiState.setState { copy(plans = it, planBottomSheet = true) } }
+        )
+    }
+
+    private fun getPlanDetail(id: Long) {
+        fetchData(
+            request = { planRepo.getPlanDetail(id) },
+            onSuccess = { _uiState.setState { copy(plan = it) } }
+        )
+    }
+
+    private fun getTodoDetail(id: Long) {
         fetchData(
             request = { repo.getTodoById(id) },
             onSuccess = {
+
                 _uiState.setState {
-                    copy(
-                        id = it.id.toInt(),
-                        title = it.title,
-                        startDate = it.startDate,
-                        targetDate = it.endDate,
-                        isAssociatePlan = it.isAssociatePlan,
-                        associateId = it.associateId,
-                        repeatable = it.repeatable
-                    )
+                    copy(todo = it, startTime = it.startDate, endTime = it.endDate)
+                }
+                if (it.isAssociatePlan && it.associateId != 0) {
+                    getPlanDetail(it.associateId.toLong())
                 }
             }
         )
     }
 
+    //
     private fun checkParams(): Boolean {
-        if (_uiState.value.title.isEmpty()) {
+        if (_uiState.value.todo.title.isEmpty()) {
             "标题不能为空".toast()
             return false
         }
         if (!compareDate(
-                _uiState.value.startDate.dateToString(),
-                _uiState.value.targetDate.dateToString()
+                _uiState.value.todo.startDate.dateToString(),
+                _uiState.value.todo.endDate.dateToString()
             )
         ) {
             "结束时间不能早于开始时间".toast()
             return false
         }
-//        if (_uiState.value.isAssociatePlan && _uiState.value.associateId == 0) {
-//            "请选择相关联的计划".toast()
-//            return false
-//        }
+        if (_uiState.value.todo.isAssociatePlan && _uiState.value.plan.id.toInt() == 0) {
+            "请选择相关联的计划".toast()
+            return false
+        }
         return true
     }
 
-    private fun saveSchedule() {
+    private fun saveTodo() {
         if (!checkParams()) return
         fetchData(
-            request = {
-                repo.upsert(
-                    Todo(
-                        id = _uiState.value.id.toLong(),
-                        title = _uiState.value.title,
-                        startDate = _uiState.value.startDate,
-                        endDate = _uiState.value.targetDate,
-                        isAssociatePlan = _uiState.value.isAssociatePlan,
-                        associateId = _uiState.value.associateId,
-                        repeatable = _uiState.value.repeatable,
-                        status = 0,
-                    )
-                )
-            },
+            request = { repo.upsert(todo = _uiState.value.todo) },
             onSuccess = {
-                if (it > 0) {
-                    _event.sendEvent(DispatchEvent.Back)
-                    "保存成功".toast()
-                } else {
-                    "保存失败".toast()
-                }
+                _event.sendEvent(DispatchEvent.Back)
+                "保存成功".toast()
             },
             onFailed = {
                 "保存失败".toast()
@@ -139,7 +127,7 @@ class CreateScheduleViewModel @Inject constructor(
 
     private fun delete() {
         fetchData(
-            request = { repo.delete(_uiState.value.id.toLong()) },
+            request = { repo.delete(_uiState.value.todo.id) },
             onSuccess = {
                 if (it > 0) {
                     "删除成功".toast()
@@ -156,30 +144,54 @@ class CreateScheduleViewModel @Inject constructor(
 
 
     private fun setTitle(title: String) {
-        _uiState.setState { copy(title = title) }
+        _uiState.setState { copy(todo = _uiState.value.todo.copy(title = title)) }
     }
 
     private fun setStartDate(time: Long) {
-        _uiState.setState { copy(startDate = time) }
+        _uiState.setState {
+            copy(
+                todo = _uiState.value.todo.copy(startDate = time),
+                startTime = time,
+
+                )
+        }
     }
 
     private fun setTargetDate(time: Long) {
-        _uiState.setState { copy(targetDate = time) }
+        _uiState.setState {
+            copy(
+                todo = _uiState.value.todo.copy(endDate = time),
+                endTime = time,
+            )
+        }
     }
 
     private fun setAssociateState() {
-        _uiState.setState { copy(isAssociatePlan = !_uiState.value.isAssociatePlan) }
-
+        _uiState.setState {
+            copy(
+                todo = _uiState.value.todo.copy(isAssociatePlan = _uiState.value.todo.isAssociatePlan.not()),
+                plan = Plan()
+            )
+        }
     }
 
     private fun setIsRepeat() {
-        _uiState.setState { copy(repeatable = !_uiState.value.repeatable) }
+        _uiState.setState {
+            copy(
+                todo = _uiState.value.todo.copy(
+                    repeatable = _uiState.value.todo.repeatable.not(),
+                    startDate = if (_uiState.value.todo.repeatable) _uiState.value.startTime else _uiState.value.plan.startDate,
+                    endDate = if (_uiState.value.todo.repeatable) _uiState.value.endTime else _uiState.value.plan.endDate,
+                ),
+            )
+        }
+
     }
 
     private fun setDialogState() {
         _uiState.setState { copy(planBottomSheet = !_uiState.value.planBottomSheet) }
         if (_uiState.value.planBottomSheet) {
-            getTodoDetail(_uiState.value.associateId)
+            getTodoDetail(_uiState.value.todo.id)
         }
     }
 
@@ -188,16 +200,11 @@ class CreateScheduleViewModel @Inject constructor(
 
 
 data class CreateScheduleState(
-    val id: Int = 0,
-    val title: String = "",
-    val startDate: Long = getCurrentDate(),
-    val targetDate: Long = getCurrentDate(),
-    val isAssociatePlan: Boolean = false,
-    val repeatable: Boolean = false,
-    val associateId: Int = 0,
-    val progress: Double = 0.0,
     val planBottomSheet: Boolean = false,
-    val planTitle: String = "",
+    val startTime: Long = getCurrentDate(),
+    val endTime: Long = getCurrentDate(false),
+    val todo: Todo = Todo(),
+    val plan: Plan = Plan(),
     val plans: List<Plan> = emptyList(),
 )
 
@@ -207,11 +214,11 @@ sealed class CreateScheduleAction {
     object ChangeBottomSheet : CreateScheduleAction()
     object Delete : CreateScheduleAction()
     object GetPlans : CreateScheduleAction()
-    class GetTodoDetail(val id: Int) : CreateScheduleAction()
+    class GetTodoDetail(val id: Long) : CreateScheduleAction()
     class SetTitle(val title: String) : CreateScheduleAction()
     class SetStartDate(val time: Long) : CreateScheduleAction()
     class SetTargetDate(val time: Long) : CreateScheduleAction()
     object SetAssociateState : CreateScheduleAction()
     object SetIsRepeat : CreateScheduleAction()
-    class SetPlan(val id: Int, val title: String, val progress: Double) : CreateScheduleAction()
+    class SetPlan(val id: Long) : CreateScheduleAction()
 }

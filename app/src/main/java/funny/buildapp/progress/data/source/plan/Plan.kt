@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "plans")
 data class Plan(
     @PrimaryKey(autoGenerate = true)
-    val id: Long,
+    val id: Long = 0,
     val title: String = "",
     val startDate: Long = 0,
     val endDate: Long = 0,

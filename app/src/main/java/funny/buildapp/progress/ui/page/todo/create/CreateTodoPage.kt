@@ -48,6 +48,7 @@ import funny.buildapp.progress.ui.theme.transparent
 import funny.buildapp.progress.utils.dateToString
 import funny.buildapp.progress.utils.daysBetweenDates
 import funny.buildapp.progress.utils.getCurrentDate
+import funny.buildapp.progress.utils.loge
 import funny.buildapp.progress.utils.showToast
 import funny.buildapp.progress.widgets.AppToolsBar
 import funny.buildapp.progress.widgets.CustomBottomSheet
@@ -67,10 +68,12 @@ fun CreateTodoPage(
 ) {
     val id = navBackStackEntry?.arguments?.getInt("id") ?: 0
     val uiState by viewModel.uiState.collectAsState()
+    val plan = uiState.plan
+    val todo = uiState.todo
     var openDialog by remember { mutableStateOf(false) }
     var dialogState by remember { mutableIntStateOf(0) }
     LaunchedEffect(Unit) {
-        viewModel.dispatch(CreateScheduleAction.GetTodoDetail(id = id))
+        viewModel.dispatch(CreateScheduleAction.GetTodoDetail(id = id.toLong()))
         viewModel.mainEvent.collect {
             when (it) {
                 is DispatchEvent.ShowToast -> it.msg.showToast()
@@ -97,7 +100,7 @@ fun CreateTodoPage(
             }
             item {
                 PlanTitle(
-                    text = uiState.title,
+                    text = todo.title,
                     hint = "请在这里输入日程内容",
                     title = "日程内容",
                     onTextChange = {
@@ -114,12 +117,20 @@ fun CreateTodoPage(
             }
             item {
                 RoundCard {
-                    TaskItem("执行时间", uiState.startDate.dateToString()) {
+                    TaskItem(
+                        "执行时间",
+                        if (todo.repeatable && todo.isAssociatePlan) plan.startDate.dateToString()
+                        else uiState.startTime.dateToString()
+                    ) {
                         dialogState = 0
                         openDialog = !openDialog
                     }
                     SpaceLine()
-                    TaskItem("结束时间", uiState.targetDate.dateToString()) {
+                    TaskItem(
+                        "结束时间",
+                        if (todo.repeatable && todo.isAssociatePlan) plan.endDate.dateToString()
+                        else uiState.endTime.dateToString()
+                    ) {
                         dialogState = 1
                         openDialog = !openDialog
                     }
@@ -127,7 +138,7 @@ fun CreateTodoPage(
                     TaskItem("关联计划", content = {
                         SwitchButton(
                             modifier = Modifier.height(25.dp),
-                            checked = uiState.isAssociatePlan,
+                            checked = todo.isAssociatePlan,
                             onCheckedChange = {
                                 viewModel.dispatch(CreateScheduleAction.SetAssociateState)
                             })
@@ -135,34 +146,38 @@ fun CreateTodoPage(
                 }
             }
             item {
+                val percentage = plan.initialValue.toDouble() / plan.targetValue.toDouble() * 100
+                val progress = "${String.format("%.1f", percentage).toDouble()}"
                 Column {
-                    AnimatedVisibility(visible = uiState.isAssociatePlan) {
+                    AnimatedVisibility(visible = todo.isAssociatePlan) {
                         Column {
-                            RoundCard {
-                                TaskItem("是否在计划内重复", content = {
-                                    SwitchButton(
-                                        modifier = Modifier.height(25.dp),
-                                        checked = uiState.repeatable,
-                                        onCheckedChange = {
-                                            viewModel.dispatch(
-                                                CreateScheduleAction.SetIsRepeat
-                                            )
-                                        })
-                                })
-                            }
-                            if (uiState.associateId != 0) {
+                            if (plan.id.toInt() != 0) {
                                 RoundCard {
                                     TaskItem(
-                                        uiState.planTitle,
+                                        title = plan.title,
                                         content = {
                                             Text(
-                                                text = "当前进度：${uiState.progress}%",
+                                                text = "当前进度：${progress}%",
                                                 fontSize = 14.sp,
                                                 color = AppTheme.colors.themeUi,
                                                 modifier = Modifier.padding(end = 8.dp)
                                             )
                                         },
                                         onItemClick = { viewModel.dispatch(CreateScheduleAction.GetPlans) })
+                                }
+                            }
+                            AnimatedVisibility(visible = plan.id.toInt() != 0) {
+                                RoundCard {
+                                    TaskItem("是否在计划内重复", content = {
+                                        SwitchButton(
+                                            modifier = Modifier.height(25.dp),
+                                            checked = todo.repeatable,
+                                            onCheckedChange = {
+                                                viewModel.dispatch(
+                                                    CreateScheduleAction.SetIsRepeat
+                                                )
+                                            })
+                                    })
                                 }
                             }
                             RoundCard {
@@ -218,8 +233,8 @@ fun CreateTodoPage(
             visible = uiState.planBottomSheet,
             content = {
                 PlanBottomSheet(
-                    onItemClick = { id, title, progress ->
-                        viewModel.dispatch(CreateScheduleAction.SetPlan(id, title, progress))
+                    onItemClick = { id ->
+                        viewModel.dispatch(CreateScheduleAction.SetPlan(id.toLong()))
                     },
                     onDismiss = { viewModel.dispatch(CreateScheduleAction.ChangeBottomSheet) },
                     plans = uiState.plans
@@ -234,7 +249,7 @@ fun CreateTodoPage(
 @Composable
 fun PlanBottomSheet(
     plans: List<Plan>,
-    onItemClick: (Int, String, Double) -> Unit = { _, _, _ -> },
+    onItemClick: (Int) -> Unit,
     onDismiss: () -> Unit = {}
 ) {
     LazyColumn(
@@ -261,6 +276,7 @@ fun PlanBottomSheet(
             }
             items(plans, key = { it.id }) {
                 val percentage = it.initialValue.toDouble() / it.targetValue.toDouble() * 100
+                val lastDay = daysBetweenDates(getCurrentDate().dateToString(), it.endDate.dateToString())
                 ProgressCard(
                     progress = String.format("%.1f", percentage).toDouble(),
                     title = it.title,
@@ -270,20 +286,9 @@ fun PlanBottomSheet(
                         2 -> "已完成"
                         else -> "未知"
                     },
-                    lastDay = "${
-                        daysBetweenDates(
-                            getCurrentDate().dateToString(),
-                            it.endDate.dateToString()
-                        )
-                    }",
+                    lastDay = lastDay,
                     proportion = "${it.initialValue}/${it.targetValue}",
-                    onClick = {
-                        onItemClick(
-                            it.id.toInt(),
-                            it.title,
-                            String.format("%.1f", percentage).toDouble()
-                        )
-                    })
+                    onClick = { onItemClick(it.id.toInt()) })
             }
         })
 }

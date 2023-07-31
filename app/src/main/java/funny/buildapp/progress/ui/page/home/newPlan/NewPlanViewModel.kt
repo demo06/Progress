@@ -36,7 +36,7 @@ class NewPlanViewModel @Inject constructor(private val repo: PlanRepository) :
 
     private fun getPlanDetail(id: Int) {
         fetchData(
-            request = { repo.getPlanDetail(id) },
+            request = { repo.getPlanDetail(id.toLong()) },
             onSuccess = {
                 _uiState.setState {
                     copy(
@@ -154,7 +154,7 @@ data class NewPlanUiState(
     val id: Long = 0,
     val title: String = "",
     val startTime: Long = getCurrentDate(),
-    val endTime: Long = getCurrentDate(),
+    val endTime: Long = getCurrentDate(false),
     val initialValue: Int = 0,
     val targetValue: Int = 100,
     val datePickerDialog: Boolean = false,

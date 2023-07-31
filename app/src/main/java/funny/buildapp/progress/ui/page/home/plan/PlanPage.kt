@@ -68,6 +68,7 @@ fun PlanPage(navCtrl: NavHostController, viewModel: PlanViewModel = hiltViewMode
             key = { it.id },
             itemContent = {
                 val percentage = it.initialValue.toDouble() / it.targetValue.toDouble() * 100
+                val lastDay = daysBetweenDates(getCurrentDate().dateToString(), it.endDate.dateToString())
                 ProgressCard(
                     progress = String.format("%.1f", percentage).toDouble(),
                     title = it.title,
@@ -77,12 +78,7 @@ fun PlanPage(navCtrl: NavHostController, viewModel: PlanViewModel = hiltViewMode
                         2 -> "已完成"
                         else -> "未知"
                     },
-                    lastDay = "${
-                        daysBetweenDates(
-                            getCurrentDate().dateToString(),
-                            it.endDate.dateToString()
-                        )
-                    }",
+                    lastDay = lastDay,
                     proportion = "${it.initialValue}/${it.targetValue}",
                     onClick = { RouteUtils.navTo(navCtrl, Route.PLAN_DETAIL, it.id) }
                 )
@@ -117,7 +113,7 @@ fun ProgressCard(
     title: String = "",
     status: String = "",
     proportion: String = "0/0",
-    lastDay: String = "0",
+    lastDay: Long = 0,
     onClick: () -> Unit = {}
 ) {
     val isShowPlaceHolder by remember {
@@ -151,8 +147,10 @@ fun ProgressCard(
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = lastDay, fontSize = 12.sp, color = Color.Red)
-            Text(text = "天后结束", fontSize = 12.sp, color = Color.Gray)
+            Text(text = if (lastDay >= 0) "$lastDay" else "已延期", fontSize = 12.sp, color = Color.Red)
+            if (lastDay >= 0) {
+                Text(text = "天后结束", fontSize = 12.sp, color = Color.Gray)
+            }
         }
         Row(
             Modifier
