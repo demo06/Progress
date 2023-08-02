@@ -2,15 +2,15 @@ package funny.buildapp.progress.data.source.relation
 
 import androidx.room.Embedded
 import androidx.room.Relation
-import funny.buildapp.progress.data.source.plan.Plan
+import funny.buildapp.progress.data.source.daily.Daily
 import funny.buildapp.progress.data.source.todo.Todo
 
-data class TodoWithPlan(
+data class DailyWithTodo(
     @Embedded
-    val todo: Todo,
+    val daily: Daily,
     @Relation(
-        parentColumn = "associateId",
+        parentColumn = "todoId",
         entityColumn = "id"
     )
-    val plan: Plan
+    val todo: Todo
 )

@@ -43,7 +43,7 @@ import funny.buildapp.progress.ui.page.home.newPlan.NewPlanPage
 import funny.buildapp.progress.ui.page.route.Route
 import funny.buildapp.progress.ui.page.route.RouteUtils
 import funny.buildapp.progress.ui.page.route.RouteUtils.back
-import funny.buildapp.progress.ui.page.todo.list.TodoItem
+import funny.buildapp.progress.ui.page.todo.daily.TodoItem
 import funny.buildapp.progress.ui.theme.AppTheme
 import funny.buildapp.progress.ui.theme.black
 import funny.buildapp.progress.ui.theme.themeColor

@@ -48,7 +48,6 @@ import funny.buildapp.progress.ui.theme.transparent
 import funny.buildapp.progress.utils.dateToString
 import funny.buildapp.progress.utils.daysBetweenDates
 import funny.buildapp.progress.utils.getCurrentDate
-import funny.buildapp.progress.utils.loge
 import funny.buildapp.progress.utils.showToast
 import funny.buildapp.progress.widgets.AppToolsBar
 import funny.buildapp.progress.widgets.CustomBottomSheet

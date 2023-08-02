@@ -1,4 +1,4 @@
-package funny.buildapp.progress.ui.page.todo.list
+package funny.buildapp.progress.ui.page.todo.daily
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CheckCircle
@@ -15,6 +16,9 @@ import androidx.compose.material.icons.rounded.RadioButtonUnchecked
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import funny.buildapp.progress.ui.page.home.plan.ScheduleToolBar
@@ -33,8 +38,12 @@ import funny.buildapp.progress.ui.theme.AppTheme
 import funny.buildapp.progress.widgets.clickWithoutWave
 
 @Composable
-fun TodoListPage(navCtrl: NavHostController) {
-    var selected by remember { mutableStateOf(false) }
+fun DailyPage(navCtrl: NavHostController, viewModel: DailyViewModel = hiltViewModel()) {
+    val uiState by viewModel.uiState.collectAsState()
+    val todos = uiState.todos
+    LaunchedEffect(Unit) {
+        viewModel.dispatch(DailyAction.Load)
+    }
     LazyColumn(
         Modifier
             .fillMaxSize()
@@ -43,17 +52,20 @@ fun TodoListPage(navCtrl: NavHostController) {
         item {
             ScheduleToolBar(title = "今日待办")
         }
-        items(10) {
-            TodoItem(title = "完全版四级考纲词汇（乱序）",
-                selected = selected, onClick = {
-                    selected = !selected
-                })
+        items(items = todos.filter { !it.daily.state }, key = { it.daily.id }) {
+            TodoItem(title = it.todo.title, selected = it.daily.state,
+                onClick = { viewModel.dispatch(DailyAction.UpTodayTask(it.daily)) }
+            )
         }
-        item {
-            Label()
+        if (todos.any { it.daily.state }) {
+            item {
+                Label()
+            }
         }
-        items(10) {
-            TodoItem(title = "完全版四级考纲词汇（乱序）", selected = true, onClick = {})
+        items(items = todos.filter { it.daily.state }, key = { it.daily.id }) {
+            TodoItem(title = it.todo.title, selected = it.daily.state,
+                onClick = { viewModel.dispatch(DailyAction.UpTodayTask(it.daily)) }
+            )
         }
     }
 }
@@ -113,5 +125,5 @@ fun Label() {
 @Preview(showBackground = true)
 @Composable
 fun TaskPagePreview() {
-    TodoListPage(navCtrl = rememberNavController())
+    DailyPage(navCtrl = rememberNavController())
 }
