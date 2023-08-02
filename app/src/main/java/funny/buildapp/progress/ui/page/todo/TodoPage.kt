@@ -36,6 +36,7 @@ import funny.buildapp.progress.ui.page.route.RouteUtils
 import funny.buildapp.progress.ui.theme.AppTheme
 import funny.buildapp.progress.ui.theme.themeColor
 import funny.buildapp.progress.ui.theme.white
+import funny.buildapp.progress.utils.getCurrentDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,7 +46,7 @@ fun TodoPage(navCtrl: NavHostController, viewModel: TodoViewModel = hiltViewMode
     val todos = uiState.todos
     LaunchedEffect(datePickerState) {
         snapshotFlow { datePickerState.selectedDateMillis }.collect {
-            viewModel.dispatch(TodoAction.GetTodoList(datePickerState.selectedDateMillis ?: 0))
+            viewModel.dispatch(TodoAction.GetTodoList(datePickerState.selectedDateMillis ?: getCurrentDate()))
         }
     }
     Box(

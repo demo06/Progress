@@ -16,7 +16,7 @@ import funny.buildapp.progress.ui.page.home.plan.PlanPage
 import funny.buildapp.progress.ui.page.home.newPlan.NewPlanPage
 import funny.buildapp.progress.ui.page.todo.create.CreateTodoPage
 import funny.buildapp.progress.ui.page.todo.TodoPage
-import funny.buildapp.progress.ui.page.todo.daily.DailyPage
+import funny.buildapp.progress.ui.page.daily.DailyPage
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -43,7 +43,7 @@ fun AppNav(navCtrl: NavHostController, padding: PaddingValues) {
         }
         //task
         composable(route = Route.TODO) {
-            DailyPage(navCtrl)
+            DailyPage()
         }
         //detail
         composable(
