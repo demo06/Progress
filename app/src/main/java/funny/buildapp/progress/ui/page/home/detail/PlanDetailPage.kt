@@ -52,6 +52,7 @@ import funny.buildapp.progress.ui.theme.white
 import funny.buildapp.progress.utils.dateToString
 import funny.buildapp.progress.utils.daysBetweenDates
 import funny.buildapp.progress.utils.getCurrentDate
+import funny.buildapp.progress.utils.loge
 import funny.buildapp.progress.widgets.AppToolsBar
 import funny.buildapp.progress.widgets.CustomBottomSheet
 
@@ -84,13 +85,13 @@ fun PlanDetailPage(
                 onBack = { navCtrl.back() },
                 onRightClick = { bottomSheet = !bottomSheet }
             )
-//            完全版四级考纲词汇（乱序）
             val percentage = plan.initialValue.toDouble() / plan.targetValue.toDouble() * 100
+            val progress = String.format("%.1f", percentage).toDouble()
             DetailContent(
                 title = plan.title,
                 startTime = plan.startDate.dateToString(),
                 endTime = plan.endDate.dateToString(),
-                progress = String.format("%.1f", percentage).toDouble(),
+                progress = progress,
                 proportion = "${plan.initialValue}/${plan.targetValue}",
                 surplus = "${
                     daysBetweenDates(
@@ -125,7 +126,7 @@ fun DetailContent(
     title: String,
     startTime: String,
     endTime: String,
-    progress: Double,
+    progress: Double = 0.00,
     proportion: String,
     surplus: String,
     delay: String
@@ -158,16 +159,17 @@ fun DetailContent(
         }
         item {
             val text = buildAnnotatedString {
-                withStyle(style = SpanStyle(color = AppTheme.colors.error)) {
-                    append(surplus)
-                }
-                append("天后结束  ")
-                if (delay != "0") {
+                if (delay.toInt() >= 0) {
                     append("已延期")
                     withStyle(style = SpanStyle(color = AppTheme.colors.error)) {
                         append(delay)
                     }
                     append("天")
+                } else {
+                    withStyle(style = SpanStyle(color = AppTheme.colors.error)) {
+                        append(surplus)
+                    }
+                    append("天后结束  ")
                 }
             }
             Text(
@@ -192,8 +194,9 @@ fun DetailContent(
                     Text(text = proportion, color = Color.Gray)
                 }
                 Spacer(modifier = Modifier.padding(2.dp))
+                progress.loge()
                 LinearProgressIndicator(
-                    progress = 20f / 100f,
+                    progress = (progress / 100).toFloat(),
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(5.dp)
@@ -225,8 +228,9 @@ fun Schedule(todos: List<Todo>, noDataClick: (() -> Unit?)? = null) {
                 key = { it.id },
                 itemContent = {
                     TodoItem(
-                        selected = false,
-                        title = "完全版四级考纲词汇（乱序）",
+                        selected = it.status == 1,
+                        title = it.title,
+                        showIcon = false
                     )
                 }
             )

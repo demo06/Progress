@@ -70,6 +70,7 @@ fun TodoItem(
     selected: Boolean = false,
     onClick: () -> Unit = {},
     backgroundColor: Color = Color.White,
+    showIcon: Boolean = true
 ) {
     Row(
         Modifier
@@ -80,11 +81,13 @@ fun TodoItem(
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            imageVector = if (selected) Icons.Rounded.CheckCircle else Icons.Rounded.RadioButtonUnchecked,
-            contentDescription = "icon",
-            tint = if (selected) AppTheme.colors.themeUi else Color.Gray
-        )
+        if (showIcon) {
+            Icon(
+                imageVector = if (selected) Icons.Rounded.CheckCircle else Icons.Rounded.RadioButtonUnchecked,
+                contentDescription = "icon",
+                tint = if (selected) AppTheme.colors.themeUi else Color.Gray
+            )
+        }
         Text(
             modifier = Modifier.padding(start = 8.dp),
             text = title,
