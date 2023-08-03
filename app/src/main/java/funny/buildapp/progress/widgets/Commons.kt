@@ -78,7 +78,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.AsyncImage
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import funny.buildapp.progress.ui.page.route.BottomNavRoute
+import funny.buildapp.progress.ui.route.BottomNavRoute
 import funny.buildapp.progress.ui.theme.AppTheme
 import funny.buildapp.progress.ui.theme.H5
 import funny.buildapp.progress.ui.theme.H6

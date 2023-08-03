@@ -1,4 +1,4 @@
-package funny.buildapp.progress.ui.page.route
+package funny.buildapp.progress.ui.route
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Home

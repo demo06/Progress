@@ -1,4 +1,4 @@
-package funny.buildapp.progress.ui.page.route
+package funny.buildapp.progress.ui.route
 
 import android.net.Uri
 import android.os.Bundle

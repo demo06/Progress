@@ -40,9 +40,9 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import funny.buildapp.progress.data.source.todo.Todo
 import funny.buildapp.progress.ui.page.home.newPlan.NewPlanPage
-import funny.buildapp.progress.ui.page.route.Route
-import funny.buildapp.progress.ui.page.route.RouteUtils
-import funny.buildapp.progress.ui.page.route.RouteUtils.back
+import funny.buildapp.progress.ui.route.Route
+import funny.buildapp.progress.ui.route.RouteUtils
+import funny.buildapp.progress.ui.route.RouteUtils.back
 import funny.buildapp.progress.ui.page.daily.TodoItem
 import funny.buildapp.progress.ui.theme.AppTheme
 import funny.buildapp.progress.ui.theme.black

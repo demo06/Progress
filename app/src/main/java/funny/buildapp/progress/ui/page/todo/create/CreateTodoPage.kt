@@ -39,7 +39,7 @@ import funny.buildapp.progress.ui.page.DispatchEvent
 import funny.buildapp.progress.ui.page.home.newPlan.PlanTitle
 import funny.buildapp.progress.ui.page.home.newPlan.TaskItem
 import funny.buildapp.progress.ui.page.home.plan.ProgressCard
-import funny.buildapp.progress.ui.page.route.RouteUtils.back
+import funny.buildapp.progress.ui.route.RouteUtils.back
 import funny.buildapp.progress.ui.theme.AppTheme
 import funny.buildapp.progress.ui.theme.backgroundGradient
 import funny.buildapp.progress.ui.theme.cyan

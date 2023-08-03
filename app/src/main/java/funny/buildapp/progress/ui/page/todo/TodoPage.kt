@@ -31,8 +31,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import funny.buildapp.progress.data.source.todo.Todo
-import funny.buildapp.progress.ui.page.route.Route
-import funny.buildapp.progress.ui.page.route.RouteUtils
+import funny.buildapp.progress.ui.route.Route
+import funny.buildapp.progress.ui.route.RouteUtils
 import funny.buildapp.progress.ui.theme.AppTheme
 import funny.buildapp.progress.ui.theme.themeColor
 import funny.buildapp.progress.ui.theme.white

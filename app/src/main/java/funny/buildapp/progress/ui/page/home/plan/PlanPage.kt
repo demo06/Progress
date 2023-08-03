@@ -35,8 +35,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.placeholder.material.placeholder
-import funny.buildapp.progress.ui.page.route.Route
-import funny.buildapp.progress.ui.page.route.RouteUtils
+import funny.buildapp.progress.ui.route.Route
+import funny.buildapp.progress.ui.route.RouteUtils
 import funny.buildapp.progress.ui.theme.AppTheme
 import funny.buildapp.progress.ui.theme.H3
 import funny.buildapp.progress.ui.theme.ToolBarHeight
