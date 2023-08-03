@@ -37,6 +37,7 @@ class DailyViewModel @Inject constructor(private val todoRepo: TodoRepository) :
             request = { todoRepo.upsertDaily(daily.copy(state = !daily.state)) },
             onSuccess = {
                 getDailyTodo()
+
             }
         )
     }

@@ -86,7 +86,7 @@ fun PlanDetailPage(
                 onRightClick = { bottomSheet = !bottomSheet }
             )
             val percentage = plan.initialValue.toDouble() / plan.targetValue.toDouble() * 100
-            val progress = String.format("%.1f", percentage).toDouble()
+            val progress = if (percentage.isNaN()) 0.00 else String.format("%.1f", percentage).toDouble()
             DetailContent(
                 title = plan.title,
                 startTime = plan.startDate.dateToString(),
@@ -159,7 +159,7 @@ fun DetailContent(
         }
         item {
             val text = buildAnnotatedString {
-                if (delay.toInt() >= 0) {
+                if (delay.toInt() < 0) {
                     append("已延期")
                     withStyle(style = SpanStyle(color = AppTheme.colors.error)) {
                         append(delay)
@@ -230,7 +230,8 @@ fun Schedule(todos: List<Todo>, noDataClick: (() -> Unit?)? = null) {
                     TodoItem(
                         selected = it.status == 1,
                         title = it.title,
-                        showIcon = false
+                        showIcon = false,
+                        isRepeatable = it.repeatable,
                     )
                 }
             )

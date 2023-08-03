@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.EventRepeat
 import androidx.compose.material.icons.rounded.RadioButtonUnchecked
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -70,7 +71,8 @@ fun TodoItem(
     selected: Boolean = false,
     onClick: () -> Unit = {},
     backgroundColor: Color = Color.White,
-    showIcon: Boolean = true
+    showIcon: Boolean = true,
+    isRepeatable: Boolean = false,
 ) {
     Row(
         Modifier
@@ -79,21 +81,31 @@ fun TodoItem(
             .background(backgroundColor, RoundedCornerShape(4.dp))
             .clickWithoutWave { onClick() }
             .padding(12.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        if (showIcon) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            if (showIcon) {
+                Icon(
+                    imageVector = if (selected) Icons.Rounded.CheckCircle else Icons.Rounded.RadioButtonUnchecked,
+                    contentDescription = "icon",
+                    tint = if (selected) AppTheme.colors.themeUi else Color.Gray
+                )
+            }
+            Text(
+                modifier = Modifier.padding(start = 8.dp),
+                text = title,
+                textDecoration = if (selected) TextDecoration.LineThrough else null,
+                color = if (selected) Color.Gray else Color.Unspecified
+            )
+        }
+        if (isRepeatable) {
             Icon(
-                imageVector = if (selected) Icons.Rounded.CheckCircle else Icons.Rounded.RadioButtonUnchecked,
+                imageVector = Icons.Rounded.EventRepeat,
                 contentDescription = "icon",
                 tint = if (selected) AppTheme.colors.themeUi else Color.Gray
             )
         }
-        Text(
-            modifier = Modifier.padding(start = 8.dp),
-            text = title,
-            textDecoration = if (selected) TextDecoration.LineThrough else null,
-            color = if (selected) Color.Gray else Color.Unspecified
-        )
     }
 }
 

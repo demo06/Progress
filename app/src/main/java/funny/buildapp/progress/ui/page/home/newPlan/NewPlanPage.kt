@@ -1,5 +1,6 @@
 package funny.buildapp.progress.ui.page.home.newPlan
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,6 +27,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -49,12 +51,14 @@ import funny.buildapp.progress.ui.theme.red
 import funny.buildapp.progress.ui.theme.transparent
 import funny.buildapp.progress.ui.theme.white
 import funny.buildapp.progress.utils.dateToString
+import funny.buildapp.progress.utils.loge
 import funny.buildapp.progress.utils.showToast
 import funny.buildapp.progress.widgets.AppToolsBar
 import funny.buildapp.progress.widgets.FillWidthButton
 import funny.buildapp.progress.widgets.MyDatePicker
 import funny.buildapp.progress.widgets.RoundCard
 import funny.buildapp.progress.widgets.SpaceLine
+import funny.buildapp.progress.widgets.SwitchButton
 import funny.buildapp.progress.widgets.clickWithoutWave
 
 @Composable
@@ -66,6 +70,7 @@ fun NewPlanPage(
     onDismiss: (() -> Unit)? = null
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val plan = uiState.plan
     val snackState = remember { SnackbarHostState() }
     var dialogState by remember { mutableIntStateOf(0) }
     LaunchedEffect(Unit) {
@@ -125,15 +130,15 @@ fun NewPlanPage(
             }
             item {
                 PlanTitle(
-                    text = uiState.title,
+                    text = plan.title,
                     onTextChange = {
                         viewModel.dispatch(NewPlanAction.SetTitle(title = it))
                     })
             }
             item {
                 DateCard(
-                    startTime = uiState.startTime.dateToString(),
-                    endTime = uiState.endTime.dateToString(),
+                    startTime = plan.startDate.dateToString(),
+                    endTime = plan.endDate.dateToString(),
                     startTimeClick = {
                         dialogState = 0
                         viewModel.dispatch(NewPlanAction.SetDialogState)
@@ -145,8 +150,12 @@ fun NewPlanPage(
             }
             item {
                 ProportionCard(
-                    initialValue = uiState.initialValue.toString(),
-                    targetValue = uiState.targetValue.toString(),
+                    initialValue = plan.initialValue.toString(),
+                    targetValue = plan.targetValue.toString(),
+                    adjustState = plan.autoAdjust,
+                    adjustChange = {
+                        viewModel.dispatch(NewPlanAction.SetAdjustState)
+                    },
                     initialValueChange = {
                         viewModel.dispatch(NewPlanAction.SetInitialValue(it))
                     },
@@ -200,8 +209,8 @@ fun NewPlanPage(
 @Composable
 fun PlanTitle(
     text: String = "",
-    hint: String = "在这里输入目标标题",
-    title: String = "目标名称",
+    hint: String = "在这里输入计划标题",
+    title: String = "计划名称",
     onTextChange: (String) -> Unit = {}
 ) {
     Column(
@@ -260,7 +269,7 @@ fun DateCard(
         content = {
             Text(
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                text = "目标时间",
+                text = "计划时间",
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
             )
@@ -278,6 +287,8 @@ fun DateCard(
 fun ProportionCard(
     initialValue: String,
     targetValue: String,
+    adjustState: Boolean,
+    adjustChange: () -> Unit = {},
     initialValueChange: (Int) -> Unit = {},
     endValueChange: (Int) -> Unit = {}
 ) {
@@ -286,24 +297,43 @@ fun ProportionCard(
         content = {
             Text(
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                text = "目标比例",
+                text = "计划比例",
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
             )
+
             RoundCard {
-                TaskItem("起始量", "0", content = {
-                    RoundEditText(initialValue, onValueChange = { initialValueChange(it) })
+                TaskItem("根据任务量自动调整", content = {
+                    SwitchButton(
+                        modifier = Modifier.height(25.dp),
+                        checked = adjustState,
+                        onCheckedChange = { adjustChange() },
+                    )
                 })
-                Spacer(
-                    modifier = Modifier
-                        .padding(vertical = 12.dp)
-                        .fillMaxWidth()
-                        .height(1.dp)
-                        .background(AppTheme.colors.divider)
-                )
-                TaskItem("目标量", "100", content = {
-                    RoundEditText(targetValue, onValueChange = { endValueChange(it) })
-                })
+                AnimatedVisibility(visible = !adjustState) {
+                    Column {
+                        Spacer(
+                            modifier = Modifier
+                                .padding(vertical = 12.dp)
+                                .fillMaxWidth()
+                                .height(1.dp)
+                                .background(AppTheme.colors.divider)
+                        )
+                        TaskItem("起始量", "0", content = {
+                            RoundEditText(initialValue, onValueChange = { initialValueChange(it) })
+                        })
+                        Spacer(
+                            modifier = Modifier
+                                .padding(vertical = 12.dp)
+                                .fillMaxWidth()
+                                .height(1.dp)
+                                .background(AppTheme.colors.divider)
+                        )
+                        TaskItem("计划量", "100", content = {
+                            RoundEditText(targetValue, onValueChange = { endValueChange(it) })
+                        })
+                    }
+                }
             }
         }
     )

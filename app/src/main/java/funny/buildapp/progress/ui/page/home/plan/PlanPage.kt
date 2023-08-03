@@ -45,6 +45,7 @@ import funny.buildapp.progress.ui.theme.themeColor
 import funny.buildapp.progress.utils.dateToString
 import funny.buildapp.progress.utils.daysBetweenDates
 import funny.buildapp.progress.utils.getCurrentDate
+import funny.buildapp.progress.utils.loge
 import funny.buildapp.progress.widgets.clickWithoutWave
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -164,7 +165,7 @@ fun ProgressCard(
         }
         Spacer(modifier = Modifier.padding(2.dp))
         LinearProgressIndicator(
-            progress = (progress / 100).toFloat(),
+            progress = if (progress.isNaN()) 0.0f else (progress / 100).toFloat(),
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(8.dp))

@@ -12,6 +12,7 @@ data class Plan(
     val startDate: Long = getCurrentDate(),
     val endDate: Long = getCurrentDate(false),
     val initialValue: Int = 0,
-    val targetValue: Int = 100,
+    val targetValue: Int = 0,
+    val autoAdjust: Boolean = false,
     val status: Int = 0,
 )

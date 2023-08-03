@@ -7,7 +7,7 @@ import funny.buildapp.progress.ui.page.BaseViewModel
 import funny.buildapp.progress.ui.page.DispatchEvent
 import funny.buildapp.progress.utils.compareDate
 import funny.buildapp.progress.utils.dateToString
-import funny.buildapp.progress.utils.getCurrentDate
+import funny.buildapp.progress.utils.loge
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
@@ -30,6 +30,7 @@ class NewPlanViewModel @Inject constructor(private val repo: PlanRepository) :
             is NewPlanAction.SetTargetValue -> setEndValue(action.value)
             is NewPlanAction.SetDialogState -> setDialogState()
             is NewPlanAction.GetPlanDetail -> getPlanDetail(action.id)
+            is NewPlanAction.SetAdjustState -> setAdjustState()
         }
     }
 
@@ -40,12 +41,7 @@ class NewPlanViewModel @Inject constructor(private val repo: PlanRepository) :
             onSuccess = {
                 _uiState.setState {
                     copy(
-                        id = it.id,
-                        title = it.title,
-                        startTime = it.startDate,
-                        endTime = it.endDate,
-                        initialValue = it.initialValue,
-                        targetValue = it.targetValue,
+                        plan = it,
                         datePickerDialog = false
                     )
                 }
@@ -55,19 +51,19 @@ class NewPlanViewModel @Inject constructor(private val repo: PlanRepository) :
 
 
     private fun checkParams(): Boolean {
-        if (_uiState.value.title.isEmpty()) {
+        if (_uiState.value.plan.title.isEmpty()) {
             "标题不能为空".toast()
             return false
         }
         if (!compareDate(
-                _uiState.value.startTime.dateToString(),
-                _uiState.value.endTime.dateToString()
+                _uiState.value.plan.startDate.dateToString(),
+                _uiState.value.plan.endDate.dateToString()
             )
         ) {
             "结束时间不能早于开始时间".toast()
             return false
         }
-        if (_uiState.value.initialValue > _uiState.value.targetValue) {
+        if (_uiState.value.plan.initialValue > _uiState.value.plan.targetValue) {
             "初始值不能大于目标值".toast()
             return false
         }
@@ -77,26 +73,10 @@ class NewPlanViewModel @Inject constructor(private val repo: PlanRepository) :
     private fun savePlan() {
         if (!checkParams()) return
         fetchData(
-            request = {
-                repo.upsert(
-                    Plan(
-                        id = _uiState.value.id,
-                        title = _uiState.value.title,
-                        startDate = _uiState.value.startTime,
-                        endDate = _uiState.value.endTime,
-                        initialValue = _uiState.value.initialValue,
-                        targetValue = _uiState.value.targetValue,
-                        status = 0,
-                    )
-                )
-            },
+            request = { repo.upsert(_uiState.value.plan) },
             onSuccess = {
-                if (it > 0) {
-                    "保存成功".toast()
-                    _event.sendEvent(DispatchEvent.Back)
-                } else {
-                    "保存失败".toast()
-                }
+                "保存成功".toast()
+                _event.sendEvent(DispatchEvent.Back)
             },
             onFailed = {
                 "保存失败".toast()
@@ -106,14 +86,10 @@ class NewPlanViewModel @Inject constructor(private val repo: PlanRepository) :
 
     private fun deletePlan() {
         fetchData(
-            request = { repo.delete(_uiState.value.id) },
+            request = { repo.delete(_uiState.value.plan.id) },
             onSuccess = {
-                if (it > 0) {
-                    "删除成功".toast()
-                    _event.sendEvent(DispatchEvent.Back)
-                } else {
-                    "删除失败".toast()
-                }
+                "删除成功".toast()
+                _event.sendEvent(DispatchEvent.Back)
             },
             onFailed = {
                 "删除失败".toast()
@@ -123,40 +99,38 @@ class NewPlanViewModel @Inject constructor(private val repo: PlanRepository) :
     }
 
     private fun setTitle(title: String) {
-        _uiState.setState { copy(title = title) }
+        _uiState.setState { copy(plan = _uiState.value.plan.copy(title = title)) }
     }
 
     private fun setStartTime(time: Long) {
-        _uiState.setState { copy(startTime = time) }
+        _uiState.setState { copy(plan = _uiState.value.plan.copy(startDate = time)) }
     }
 
     private fun setEndTime(time: Long) {
-        _uiState.setState { copy(endTime = time) }
+        _uiState.setState { copy(plan = _uiState.value.plan.copy(endDate = time)) }
     }
 
     private fun setInitialValue(value: Int) {
-        _uiState.setState { copy(initialValue = value) }
+        _uiState.setState { copy(plan = _uiState.value.plan.copy(initialValue = value)) }
 
     }
 
     private fun setEndValue(value: Int) {
-        _uiState.setState { copy(targetValue = value) }
+        _uiState.setState { copy(plan = _uiState.value.plan.copy(targetValue = value)) }
     }
 
     private fun setDialogState() {
         _uiState.setState { copy(datePickerDialog = !_uiState.value.datePickerDialog) }
     }
 
+    private fun setAdjustState() {
+        _uiState.setState { copy(plan = _uiState.value.plan.copy(autoAdjust = !_uiState.value.plan.autoAdjust)) }
+    }
 
 }
 
 data class NewPlanUiState(
-    val id: Long = 0,
-    val title: String = "",
-    val startTime: Long = getCurrentDate(),
-    val endTime: Long = getCurrentDate(false),
-    val initialValue: Int = 0,
-    val targetValue: Int = 100,
+    val plan: Plan = Plan(),
     val datePickerDialog: Boolean = false,
 )
 
@@ -171,5 +145,6 @@ sealed class NewPlanAction {
     class SetEndTime(val time: Long) : NewPlanAction()
     class SetInitialValue(val value: Int) : NewPlanAction()
     class SetTargetValue(val value: Int) : NewPlanAction()
+    object SetAdjustState : NewPlanAction()
 
 }
