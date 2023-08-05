@@ -38,3 +38,8 @@ fun daysBetweenDates(date1: String, date2: String): Long {
     val secondDate = LocalDate.parse(date2)
     return ChronoUnit.DAYS.between(firstDate, secondDate)
 }
+
+fun calculateDaysBetweenTwoLongs(startTime: Long, endTime: Long): Long {
+    "startTime: $startTime, endTime: $endTime,days=${(endTime - startTime + 1000) / 24 * 60 * 60 * 1000}".loge()
+    return (endTime - startTime + 1000) / (24 * 60 * 60 * 1000)
+}

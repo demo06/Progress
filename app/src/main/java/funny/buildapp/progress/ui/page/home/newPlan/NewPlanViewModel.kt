@@ -7,7 +7,6 @@ import funny.buildapp.progress.ui.page.BaseViewModel
 import funny.buildapp.progress.ui.page.DispatchEvent
 import funny.buildapp.progress.utils.compareDate
 import funny.buildapp.progress.utils.dateToString
-import funny.buildapp.progress.utils.loge
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 

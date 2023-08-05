@@ -17,6 +17,7 @@ class TodoRepository @Inject constructor(private val todoDao: TodoDao, private v
     suspend fun getTodoByDate(date: Long) = todoDao.getTodoByDate(date)
     suspend fun getTodoById(todoId: Long) = todoDao.getTodoById(todoId)
     suspend fun upsert(todo: Todo): Long {
+        // TODO:  
         return todoDao.insertTodo(todo)
     }
 
@@ -43,7 +44,7 @@ class TodoRepository @Inject constructor(private val todoDao: TodoDao, private v
         return getDailyWithTodo()
     }
 
-    suspend fun getDailyWithTodo(): List<DailyWithTodo> {
+    private suspend fun getDailyWithTodo(): List<DailyWithTodo> {
         return dailyDao.getDailyWithTodo(getCurrentDate(), getCurrentDate(false))
     }
 

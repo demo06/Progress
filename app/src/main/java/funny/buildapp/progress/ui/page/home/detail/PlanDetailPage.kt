@@ -39,11 +39,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import funny.buildapp.progress.data.source.todo.Todo
+import funny.buildapp.progress.ui.page.daily.TodoItem
 import funny.buildapp.progress.ui.page.home.newPlan.NewPlanPage
 import funny.buildapp.progress.ui.route.Route
 import funny.buildapp.progress.ui.route.RouteUtils
 import funny.buildapp.progress.ui.route.RouteUtils.back
-import funny.buildapp.progress.ui.page.daily.TodoItem
 import funny.buildapp.progress.ui.theme.AppTheme
 import funny.buildapp.progress.ui.theme.black
 import funny.buildapp.progress.ui.theme.themeColor
@@ -52,9 +52,9 @@ import funny.buildapp.progress.ui.theme.white
 import funny.buildapp.progress.utils.dateToString
 import funny.buildapp.progress.utils.daysBetweenDates
 import funny.buildapp.progress.utils.getCurrentDate
-import funny.buildapp.progress.utils.loge
 import funny.buildapp.progress.widgets.AppToolsBar
 import funny.buildapp.progress.widgets.CustomBottomSheet
+import kotlin.math.abs
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -87,6 +87,7 @@ fun PlanDetailPage(
             )
             val percentage = plan.initialValue.toDouble() / plan.targetValue.toDouble() * 100
             val progress = if (percentage.isNaN()) 0.00 else String.format("%.1f", percentage).toDouble()
+            val lastDay = daysBetweenDates(getCurrentDate().dateToString(), plan.endDate.dateToString())
             DetailContent(
                 title = plan.title,
                 startTime = plan.startDate.dateToString(),
@@ -99,7 +100,7 @@ fun PlanDetailPage(
                         plan.endDate.dateToString()
                     )
                 }",
-                delay = "0"
+                delay = lastDay
             )
             Schedule(todos, noDataClick = {
                 RouteUtils.navTo(navCtrl, Route.CREATE_TODO, 0)
@@ -129,7 +130,7 @@ fun DetailContent(
     progress: Double = 0.00,
     proportion: String,
     surplus: String,
-    delay: String
+    delay: Long
 ) {
     LazyColumn(
         modifier = Modifier
@@ -159,10 +160,10 @@ fun DetailContent(
         }
         item {
             val text = buildAnnotatedString {
-                if (delay.toInt() < 0) {
+                if (delay < 0) {
                     append("已延期")
                     withStyle(style = SpanStyle(color = AppTheme.colors.error)) {
-                        append(delay)
+                        append(abs(delay).toString())
                     }
                     append("天")
                 } else {
@@ -194,7 +195,6 @@ fun DetailContent(
                     Text(text = proportion, color = Color.Gray)
                 }
                 Spacer(modifier = Modifier.padding(2.dp))
-                progress.loge()
                 LinearProgressIndicator(
                     progress = (progress / 100).toFloat(),
                     modifier = Modifier

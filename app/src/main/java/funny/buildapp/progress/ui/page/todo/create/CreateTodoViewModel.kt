@@ -1,6 +1,5 @@
 package funny.buildapp.progress.ui.page.todo.create
 
-import android.icu.util.UniversalTimeScale.toLong
 import dagger.hilt.android.lifecycle.HiltViewModel
 import funny.buildapp.progress.data.PlanRepository
 import funny.buildapp.progress.data.TodoRepository
@@ -8,9 +7,11 @@ import funny.buildapp.progress.data.source.plan.Plan
 import funny.buildapp.progress.data.source.todo.Todo
 import funny.buildapp.progress.ui.page.BaseViewModel
 import funny.buildapp.progress.ui.page.DispatchEvent
+import funny.buildapp.progress.utils.calculateDaysBetweenTwoLongs
 import funny.buildapp.progress.utils.compareDate
 import funny.buildapp.progress.utils.dateToString
 import funny.buildapp.progress.utils.getCurrentDate
+import funny.buildapp.progress.utils.loge
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
@@ -47,7 +48,7 @@ class CreateScheduleViewModel @Inject constructor(
             onSuccess = {
                 _uiState.setState {
                     copy(
-                        todo = todo.copy(associateId = id.toInt()),
+                        todo = todo.copy(associateId = id.toInt(), startDate = it.startDate, endDate = it.endDate),
                         plan = it,
                         planBottomSheet = false,
                         startTime = _uiState.value.todo.startDate,
@@ -77,7 +78,6 @@ class CreateScheduleViewModel @Inject constructor(
         fetchData(
             request = { repo.getTodoById(id) },
             onSuccess = {
-
                 _uiState.setState {
                     copy(todo = it, startTime = it.startDate, endTime = it.endDate)
                 }
@@ -112,10 +112,16 @@ class CreateScheduleViewModel @Inject constructor(
     private fun saveTodo() {
         if (!checkParams()) return
         fetchData(
-            request = { repo.upsert(todo = _uiState.value.todo) },
+            request = {
+                repo.upsert(
+                    todo = _uiState.value.todo.copy(
+                        startDate = if (_uiState.value.todo.repeatable) _uiState.value.plan.startDate else _uiState.value.startTime,
+                        endDate = if (_uiState.value.todo.repeatable) _uiState.value.plan.endDate else _uiState.value.endTime
+                    )
+                )
+            },
             onSuccess = {
-                _event.sendEvent(DispatchEvent.Back)
-                "保存成功".toast()
+                increaseTodoCount()
             },
             onFailed = {
                 "保存失败".toast()
@@ -128,16 +134,58 @@ class CreateScheduleViewModel @Inject constructor(
         fetchData(
             request = { repo.delete(_uiState.value.todo.id) },
             onSuccess = {
-                if (it > 0) {
-                    "删除成功".toast()
-                    _event.sendEvent(DispatchEvent.Back)
-                } else {
-                    "删除失败".toast()
-                }
+                subtractTodoCount()
+                _event.sendEvent(DispatchEvent.Back)
+                "删除成功".toast()
             },
             onFailed = {
                 "删除失败".toast()
             }
+        )
+    }
+
+
+    private fun increaseTodoCount() {
+        fetchData(
+            request = {
+                if (!_uiState.value.todo.isAssociatePlan) {
+                    planRepo.upsert(_uiState.value.plan.copy(targetValue = _uiState.value.plan.targetValue + 1))
+                } else {
+                    if (_uiState.value.todo.repeatable) {// if it's repeatable
+                        val days =
+                            calculateDaysBetweenTwoLongs(startTime = _uiState.value.plan.startDate, endTime = _uiState.value.plan.endDate)
+                        "days+:$days".loge()
+                        val targetValue = (_uiState.value.plan.targetValue + days).toInt()
+                        planRepo.upsert(_uiState.value.plan.copy(targetValue = targetValue))
+                    } else {
+                        planRepo.upsert(_uiState.value.plan.copy(targetValue = _uiState.value.plan.targetValue + 1))
+                    }
+                }
+            },
+            onSuccess = {
+                _event.sendEvent(DispatchEvent.Back)
+                "保存成功".toast()
+            }, onFailed = { }
+        )
+    }
+
+    private fun subtractTodoCount() {
+        if (!_uiState.value.todo.isAssociatePlan) return
+        if (_uiState.value.plan.targetValue == 0) return
+        fetchData(
+            request = {
+                if (_uiState.value.todo.repeatable) {// if it's repeatable
+                    val days =
+                        calculateDaysBetweenTwoLongs(startTime = _uiState.value.plan.startDate, endTime = _uiState.value.plan.endDate)
+                    "days-:$days".loge()
+                    val targetValue = (_uiState.value.plan.targetValue - days).toInt()
+                    planRepo.upsert(_uiState.value.plan.copy(targetValue = targetValue))
+                } else {
+                    planRepo.upsert(_uiState.value.plan.copy(targetValue = _uiState.value.plan.targetValue - 1))
+                }
+            },
+            onSuccess = {
+            }, onFailed = { }
         )
     }
 
@@ -150,9 +198,8 @@ class CreateScheduleViewModel @Inject constructor(
         _uiState.setState {
             copy(
                 todo = _uiState.value.todo.copy(startDate = time),
-                startTime = time,
-
-                )
+                startTime = time
+            )
         }
     }
 
@@ -180,8 +227,8 @@ class CreateScheduleViewModel @Inject constructor(
             copy(
                 todo = _uiState.value.todo.copy(
                     repeatable = _uiState.value.todo.repeatable.not(),
-                    startDate = if (_uiState.value.todo.repeatable) _uiState.value.startTime else _uiState.value.plan.startDate,
-                    endDate = if (_uiState.value.todo.repeatable) _uiState.value.endTime else _uiState.value.plan.endDate,
+                    startDate = if (_uiState.value.todo.repeatable) _uiState.value.plan.startDate else _uiState.value.startTime,
+                    endDate = if (_uiState.value.todo.repeatable) _uiState.value.plan.endDate else _uiState.value.endTime,
                 ),
             )
         }

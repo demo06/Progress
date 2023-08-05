@@ -45,7 +45,6 @@ import funny.buildapp.progress.ui.theme.themeColor
 import funny.buildapp.progress.utils.dateToString
 import funny.buildapp.progress.utils.daysBetweenDates
 import funny.buildapp.progress.utils.getCurrentDate
-import funny.buildapp.progress.utils.loge
 import funny.buildapp.progress.widgets.clickWithoutWave
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -160,7 +159,7 @@ fun ProgressCard(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "完成$progress%", fontSize = 12.sp)
+            Text(text = "完成${if (progress.isNaN()) 0.0 else progress}%", fontSize = 12.sp)
             Text(text = proportion, fontSize = 12.sp, color = Color.Gray)
         }
         Spacer(modifier = Modifier.padding(2.dp))

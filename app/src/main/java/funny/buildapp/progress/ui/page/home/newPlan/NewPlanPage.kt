@@ -27,7 +27,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -51,7 +50,6 @@ import funny.buildapp.progress.ui.theme.red
 import funny.buildapp.progress.ui.theme.transparent
 import funny.buildapp.progress.ui.theme.white
 import funny.buildapp.progress.utils.dateToString
-import funny.buildapp.progress.utils.loge
 import funny.buildapp.progress.utils.showToast
 import funny.buildapp.progress.widgets.AppToolsBar
 import funny.buildapp.progress.widgets.FillWidthButton

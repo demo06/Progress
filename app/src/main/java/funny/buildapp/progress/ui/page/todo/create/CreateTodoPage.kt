@@ -146,7 +146,7 @@ fun CreateTodoPage(
             }
             item {
                 val percentage = plan.initialValue.toDouble() / plan.targetValue.toDouble() * 100
-                val progress = "${String.format("%.1f", percentage).toDouble()}"
+                val progress = String.format("%.1f", percentage).toDouble()
                 Column {
                     AnimatedVisibility(visible = todo.isAssociatePlan) {
                         Column {
@@ -156,7 +156,7 @@ fun CreateTodoPage(
                                         title = plan.title,
                                         content = {
                                             Text(
-                                                text = "当前进度：${progress}%",
+                                                text = "当前进度：${if (progress.isNaN()) 0.0 else progress}%",
                                                 fontSize = 14.sp,
                                                 color = AppTheme.colors.themeUi,
                                                 modifier = Modifier.padding(end = 8.dp)
