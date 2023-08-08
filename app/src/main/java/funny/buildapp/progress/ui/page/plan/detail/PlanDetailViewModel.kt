@@ -1,4 +1,4 @@
-package funny.buildapp.progress.ui.page.home.detail
+package funny.buildapp.progress.ui.page.plan.detail
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import funny.buildapp.progress.data.PlanRepository
@@ -6,7 +6,7 @@ import funny.buildapp.progress.data.TodoRepository
 import funny.buildapp.progress.data.source.plan.Plan
 import funny.buildapp.progress.data.source.todo.Todo
 import funny.buildapp.progress.ui.page.BaseViewModel
-import funny.buildapp.progress.utils.showToast
+import funny.buildapp.progress.utils.loge
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
@@ -14,8 +14,7 @@ import javax.inject.Inject
 class PlanDetailViewModel @Inject constructor(
     private val repo: PlanRepository,
     private val todoRepo: TodoRepository
-) :
-    BaseViewModel<PlanDetailAction>() {
+) : BaseViewModel<PlanDetailAction>() {
 
     private val _uiState = MutableStateFlow(PlanDetailState())
     val uiState = _uiState
@@ -40,7 +39,10 @@ class PlanDetailViewModel @Inject constructor(
     private fun getTodos(id: Int) {
         fetchData(
             request = { todoRepo.getTodoByPlanId(id) },
-            onSuccess = { _uiState.setState { copy(todos = it) } }
+            onSuccess = { _uiState.setState {
+                it.loge()
+                copy(todos = it)
+            } }
         )
     }
 

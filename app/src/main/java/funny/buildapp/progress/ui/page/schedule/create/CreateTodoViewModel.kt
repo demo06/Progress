@@ -1,4 +1,4 @@
-package funny.buildapp.progress.ui.page.todo.create
+package funny.buildapp.progress.ui.page.schedule.create
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import funny.buildapp.progress.data.PlanRepository

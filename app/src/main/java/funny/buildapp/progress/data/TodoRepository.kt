@@ -13,11 +13,14 @@ import javax.inject.Singleton
 class TodoRepository @Inject constructor(private val todoDao: TodoDao, private val dailyDao: DailyDao) {
     suspend fun getAll() = todoDao.getAll()
     suspend fun loadAllByIds(todoIds: IntArray) = todoDao.loadAllByIds(todoIds)
-    suspend fun getTodoByPlanId(planId: Int) = todoDao.getTodoByPlanId(planId)
+    suspend fun getTodoByPlanId(planId: Int): List<Todo> {
+        return todoDao.getTodoByPlanId(planId)
+    }
+
     suspend fun getTodoByDate(date: Long) = todoDao.getTodoByDate(date)
     suspend fun getTodoById(todoId: Long) = todoDao.getTodoById(todoId)
     suspend fun upsert(todo: Todo): Long {
-        // TODO:  
+        // TODO:
         return todoDao.insertTodo(todo)
     }
 

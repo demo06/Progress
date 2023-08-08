@@ -1,4 +1,4 @@
-package funny.buildapp.progress.ui.page.todo
+package funny.buildapp.progress.ui.page.schedule
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import funny.buildapp.progress.data.TodoRepository
@@ -9,15 +9,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
-class TodoViewModel @Inject constructor(private val repo: TodoRepository) :
-    BaseViewModel<TodoAction>() {
+class ScheduleViewModel @Inject constructor(private val repo: TodoRepository) :
+    BaseViewModel<ScheduleAction>() {
 
-    private val _uiState = MutableStateFlow(TodoState())
+    private val _uiState = MutableStateFlow(ScheduleState())
     val uiState = _uiState
-    override fun dispatch(action: TodoAction) {
+    override fun dispatch(action: ScheduleAction) {
         when (action) {
-            is TodoAction.SendEvent -> _event.sendEvent(action.event)
-            is TodoAction.GetTodoList -> getTodoList(action.date)
+            is ScheduleAction.SendEvent -> _event.sendEvent(action.event)
+            is ScheduleAction.GetScheduleList -> getTodoList(action.date)
         }
     }
 
@@ -35,13 +35,13 @@ class TodoViewModel @Inject constructor(private val repo: TodoRepository) :
 
 }
 
-data class TodoState(
+data class ScheduleState(
     val todos: List<Todo> = emptyList(),
 )
 
-sealed class TodoAction {
-    class SendEvent(val event: DispatchEvent) : TodoAction()
-    class GetTodoList(val date: Long) : TodoAction()
+sealed class ScheduleAction {
+    class SendEvent(val event: DispatchEvent) : ScheduleAction()
+    class GetScheduleList(val date: Long) : ScheduleAction()
 
 }
 

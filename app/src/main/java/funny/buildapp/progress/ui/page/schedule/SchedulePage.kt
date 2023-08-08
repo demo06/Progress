@@ -1,4 +1,4 @@
-package funny.buildapp.progress.ui.page.todo
+package funny.buildapp.progress.ui.page.schedule
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -40,13 +40,13 @@ import funny.buildapp.progress.utils.getCurrentDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TodoPage(navCtrl: NavHostController, viewModel: TodoViewModel = hiltViewModel()) {
+fun SchedulePage(navCtrl: NavHostController, viewModel: ScheduleViewModel = hiltViewModel()) {
     val datePickerState = rememberDatePickerState()
     val uiState by viewModel.uiState.collectAsState()
     val todos = uiState.todos
     LaunchedEffect(datePickerState) {
         snapshotFlow { datePickerState.selectedDateMillis }.collect {
-            viewModel.dispatch(TodoAction.GetTodoList(datePickerState.selectedDateMillis ?: getCurrentDate()))
+            viewModel.dispatch(ScheduleAction.GetScheduleList(datePickerState.selectedDateMillis ?: getCurrentDate()))
         }
     }
     Box(
@@ -136,5 +136,5 @@ fun ScheduleItem(text: String, onItemClick: () -> Unit = {}) {
 @Preview(showBackground = true)
 @Composable
 fun SchedulePreview() {
-    TodoPage(navCtrl = rememberNavController())
+    SchedulePage(navCtrl = rememberNavController())
 }

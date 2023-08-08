@@ -1,4 +1,4 @@
-package funny.buildapp.progress.ui.page.todo.create
+package funny.buildapp.progress.ui.page.schedule.create
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -36,9 +36,9 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import funny.buildapp.progress.data.source.plan.Plan
 import funny.buildapp.progress.ui.page.DispatchEvent
-import funny.buildapp.progress.ui.page.home.newPlan.PlanTitle
-import funny.buildapp.progress.ui.page.home.newPlan.TaskItem
-import funny.buildapp.progress.ui.page.home.plan.ProgressCard
+import funny.buildapp.progress.ui.page.plan.newPlan.PlanTitle
+import funny.buildapp.progress.ui.page.plan.newPlan.TaskItem
+import funny.buildapp.progress.ui.page.plan.ProgressCard
 import funny.buildapp.progress.ui.route.RouteUtils.back
 import funny.buildapp.progress.ui.theme.AppTheme
 import funny.buildapp.progress.ui.theme.backgroundGradient

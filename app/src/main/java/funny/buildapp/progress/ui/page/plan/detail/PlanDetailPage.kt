@@ -1,4 +1,4 @@
-package funny.buildapp.progress.ui.page.home.detail
+package funny.buildapp.progress.ui.page.plan.detail
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -40,7 +40,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import funny.buildapp.progress.data.source.todo.Todo
 import funny.buildapp.progress.ui.page.daily.TodoItem
-import funny.buildapp.progress.ui.page.home.newPlan.NewPlanPage
+import funny.buildapp.progress.ui.page.plan.newPlan.NewPlanPage
 import funny.buildapp.progress.ui.route.Route
 import funny.buildapp.progress.ui.route.RouteUtils
 import funny.buildapp.progress.ui.route.RouteUtils.back

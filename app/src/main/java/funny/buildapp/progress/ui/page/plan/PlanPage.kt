@@ -1,4 +1,4 @@
-package funny.buildapp.progress.ui.page.home.plan
+package funny.buildapp.progress.ui.page.plan
 
 import android.os.Build
 import androidx.annotation.RequiresApi

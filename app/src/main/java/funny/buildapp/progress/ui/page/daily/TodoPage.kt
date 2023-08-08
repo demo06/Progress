@@ -27,16 +27,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import funny.buildapp.progress.ui.page.home.plan.ScheduleToolBar
+import funny.buildapp.progress.ui.page.plan.ScheduleToolBar
 import funny.buildapp.progress.ui.theme.AppTheme
 import funny.buildapp.progress.widgets.clickWithoutWave
 
 @Composable
-fun DailyPage(viewModel: DailyViewModel = hiltViewModel()) {
+fun TodoPage(viewModel: TodoViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsState()
     val todos = uiState.todos
     LaunchedEffect(Unit) {
-        viewModel.dispatch(DailyAction.Load)
+        viewModel.dispatch(TodoAction.Load)
     }
     LazyColumn(
         Modifier
@@ -48,7 +48,7 @@ fun DailyPage(viewModel: DailyViewModel = hiltViewModel()) {
         }
         items(items = todos.filter { !it.daily.state }, key = { it.daily.id }) {
             TodoItem(title = it.todo.title, selected = it.daily.state,
-                onClick = { viewModel.dispatch(DailyAction.UpTodayTask(it.daily)) }
+                onClick = { viewModel.dispatch(TodoAction.UpTodayTask(it.daily)) }
             )
         }
         if (todos.any { it.daily.state }) {
@@ -58,7 +58,7 @@ fun DailyPage(viewModel: DailyViewModel = hiltViewModel()) {
         }
         items(items = todos.filter { it.daily.state }, key = { it.daily.id }) {
             TodoItem(title = it.todo.title, selected = it.daily.state,
-                onClick = { viewModel.dispatch(DailyAction.UpTodayTask(it.daily)) }
+                onClick = { viewModel.dispatch(TodoAction.UpTodayTask(it.daily)) }
             )
         }
     }

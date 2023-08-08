@@ -11,12 +11,12 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import funny.buildapp.progress.ui.page.home.detail.PlanDetailPage
-import funny.buildapp.progress.ui.page.home.plan.PlanPage
-import funny.buildapp.progress.ui.page.home.newPlan.NewPlanPage
-import funny.buildapp.progress.ui.page.todo.create.CreateTodoPage
-import funny.buildapp.progress.ui.page.todo.TodoPage
-import funny.buildapp.progress.ui.page.daily.DailyPage
+import funny.buildapp.progress.ui.page.plan.detail.PlanDetailPage
+import funny.buildapp.progress.ui.page.plan.PlanPage
+import funny.buildapp.progress.ui.page.plan.newPlan.NewPlanPage
+import funny.buildapp.progress.ui.page.schedule.create.CreateTodoPage
+import funny.buildapp.progress.ui.page.schedule.SchedulePage
+import funny.buildapp.progress.ui.page.daily.TodoPage
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -43,7 +43,7 @@ fun AppNav(navCtrl: NavHostController, padding: PaddingValues) {
         }
         //task
         composable(route = Route.TODO) {
-            DailyPage()
+            TodoPage()
         }
         //detail
         composable(
@@ -57,11 +57,11 @@ fun AppNav(navCtrl: NavHostController, padding: PaddingValues) {
         }
         //schedule
         composable(route = Route.SCHEDULE) {
-            TodoPage(navCtrl)
+            SchedulePage(navCtrl)
         }
         //schedule
         composable(route = Route.SCHEDULE) {
-            TodoPage(navCtrl)
+            SchedulePage(navCtrl)
         }
         //create schedule
         composable(

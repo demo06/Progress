@@ -9,15 +9,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
-class DailyViewModel @Inject constructor(private val todoRepo: TodoRepository) : BaseViewModel<DailyAction>() {
+class TodoViewModel @Inject constructor(private val todoRepo: TodoRepository) : BaseViewModel<TodoAction>() {
 
-    private val _uiState = MutableStateFlow(DailyState())
+    private val _uiState = MutableStateFlow(TodoState())
     val uiState = _uiState
 
-    override fun dispatch(action: DailyAction) {
+    override fun dispatch(action: TodoAction) {
         when (action) {
-            is DailyAction.Load -> getDailyTodo()
-            is DailyAction.UpTodayTask -> upsertDaily(action.daily)
+            is TodoAction.Load -> getDailyTodo()
+            is TodoAction.UpTodayTask -> upsertDaily(action.daily)
         }
     }
 
@@ -44,12 +44,12 @@ class DailyViewModel @Inject constructor(private val todoRepo: TodoRepository) :
 
 }
 
-data class DailyState(
+data class TodoState(
     val todos: List<DailyWithTodo> = emptyList(),
 )
 
-sealed class DailyAction {
+sealed class TodoAction {
 
-    object Load : DailyAction()
-    class UpTodayTask(val daily: Daily) : DailyAction()
+    object Load : TodoAction()
+    class UpTodayTask(val daily: Daily) : TodoAction()
 }

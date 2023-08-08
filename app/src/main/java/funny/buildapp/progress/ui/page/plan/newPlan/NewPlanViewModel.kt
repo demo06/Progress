@@ -1,4 +1,4 @@
-package funny.buildapp.progress.ui.page.home.newPlan
+package funny.buildapp.progress.ui.page.plan.newPlan
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import funny.buildapp.progress.data.PlanRepository

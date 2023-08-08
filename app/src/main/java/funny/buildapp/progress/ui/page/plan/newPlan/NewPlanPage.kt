@@ -1,4 +1,4 @@
-package funny.buildapp.progress.ui.page.home.newPlan
+package funny.buildapp.progress.ui.page.plan.newPlan
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
