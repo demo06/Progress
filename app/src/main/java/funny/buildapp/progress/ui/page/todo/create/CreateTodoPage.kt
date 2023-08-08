@@ -121,8 +121,13 @@ fun CreateTodoPage(
                         if (todo.repeatable && todo.isAssociatePlan) plan.startDate.dateToString()
                         else uiState.startTime.dateToString()
                     ) {
-                        dialogState = 0
-                        openDialog = !openDialog
+                        if (!todo.repeatable) {
+                            dialogState = 0
+                            openDialog = !openDialog
+                        } else {
+                            viewModel.dispatch(CreateScheduleAction.SendEvent(DispatchEvent.ShowToast("已关联计划时间不能修改")))
+                        }
+
                     }
                     SpaceLine()
                     TaskItem(
@@ -130,8 +135,12 @@ fun CreateTodoPage(
                         if (todo.repeatable && todo.isAssociatePlan) plan.endDate.dateToString()
                         else uiState.endTime.dateToString()
                     ) {
-                        dialogState = 1
-                        openDialog = !openDialog
+                        if (!todo.repeatable) {
+                            dialogState = 1
+                            openDialog = !openDialog
+                        } else {
+                            viewModel.dispatch(CreateScheduleAction.SendEvent(DispatchEvent.ShowToast("已关联计划时间不能修改")))
+                        }
                     }
                     SpaceLine()
                     TaskItem("关联计划", content = {
