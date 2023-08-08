@@ -39,7 +39,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import funny.buildapp.progress.data.source.todo.Todo
-import funny.buildapp.progress.ui.page.daily.TodoItem
+import funny.buildapp.progress.ui.page.todo.TodoItem
 import funny.buildapp.progress.ui.page.plan.newPlan.NewPlanPage
 import funny.buildapp.progress.ui.route.Route
 import funny.buildapp.progress.ui.route.RouteUtils

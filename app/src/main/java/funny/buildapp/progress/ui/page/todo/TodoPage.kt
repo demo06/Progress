@@ -1,4 +1,4 @@
-package funny.buildapp.progress.ui.page.daily
+package funny.buildapp.progress.ui.page.todo
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

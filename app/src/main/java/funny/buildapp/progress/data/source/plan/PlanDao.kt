@@ -17,7 +17,7 @@ interface PlanDao {
     suspend fun getPlanDetail(planId: Long): Plan
 
     @Upsert
-    suspend fun insertPlan(plans: Plan): Long
+    suspend fun upsertPlan(plans: Plan): Long
 
     @Delete
     suspend fun delete(plan: Plan): Int

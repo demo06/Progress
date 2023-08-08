@@ -11,7 +11,6 @@ import funny.buildapp.progress.utils.calculateDaysBetweenTwoLongs
 import funny.buildapp.progress.utils.compareDate
 import funny.buildapp.progress.utils.dateToString
 import funny.buildapp.progress.utils.getCurrentDate
-import funny.buildapp.progress.utils.loge
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
@@ -48,7 +47,7 @@ class CreateScheduleViewModel @Inject constructor(
             onSuccess = {
                 _uiState.setState {
                     copy(
-                        todo = todo.copy(associateId = id.toInt(), startDate = it.startDate, endDate = it.endDate),
+                        todo = todo.copy(associateId = id, startDate = it.startDate, endDate = it.endDate),
                         plan = it,
                         planBottomSheet = false,
                         startTime = _uiState.value.todo.startDate,
@@ -81,8 +80,8 @@ class CreateScheduleViewModel @Inject constructor(
                 _uiState.setState {
                     copy(todo = it, startTime = it.startDate, endTime = it.endDate)
                 }
-                if (it.isAssociatePlan && it.associateId != 0) {
-                    getPlanDetail(it.associateId.toLong())
+                if (it.isAssociatePlan && it.associateId != 0L) {
+                    getPlanDetail(it.associateId)
                 }
             }
         )
@@ -154,7 +153,6 @@ class CreateScheduleViewModel @Inject constructor(
                     if (_uiState.value.todo.repeatable) {// if it's repeatable
                         val days =
                             calculateDaysBetweenTwoLongs(startTime = _uiState.value.plan.startDate, endTime = _uiState.value.plan.endDate)
-                        "days+:$days".loge()
                         val targetValue = (_uiState.value.plan.targetValue + days).toInt()
                         planRepo.upsert(_uiState.value.plan.copy(targetValue = targetValue))
                     } else {
@@ -177,7 +175,6 @@ class CreateScheduleViewModel @Inject constructor(
                 if (_uiState.value.todo.repeatable) {// if it's repeatable
                     val days =
                         calculateDaysBetweenTwoLongs(startTime = _uiState.value.plan.startDate, endTime = _uiState.value.plan.endDate)
-                    "days-:$days".loge()
                     val targetValue = (_uiState.value.plan.targetValue - days).toInt()
                     planRepo.upsert(_uiState.value.plan.copy(targetValue = targetValue))
                 } else {

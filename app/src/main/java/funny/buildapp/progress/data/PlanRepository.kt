@@ -10,6 +10,6 @@ class PlanRepository @Inject constructor(private val planDao: PlanDao) {
     suspend fun getAll(): List<Plan> = planDao.getAll()
     suspend fun findPlanById(planId: Int) = planDao.loadAllById(planId)
     suspend fun getPlanDetail(planId: Long): Plan = planDao.getPlanDetail(planId)
-    suspend fun upsert(plan: Plan): Long = planDao.insertPlan(plan)
+    suspend fun upsert(plan: Plan): Long = planDao.upsertPlan(plan)
     suspend fun delete(id: Long): Int = planDao.delete(Plan(id = id))
 }

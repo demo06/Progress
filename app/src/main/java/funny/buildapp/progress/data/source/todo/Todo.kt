@@ -12,7 +12,7 @@ data class Todo(
     val startDate: Long = getCurrentDate(),
     val endDate: Long = getCurrentDate(false),
     val isAssociatePlan: Boolean = false,
-    val repeatable: Boolean = false,
-    val associateId: Int = 0,
+    val repeatable: Boolean = true,
+    val associateId: Long = 0,
     val status: Int = 0,
 )

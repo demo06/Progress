@@ -16,7 +16,7 @@ import funny.buildapp.progress.ui.page.plan.PlanPage
 import funny.buildapp.progress.ui.page.plan.newPlan.NewPlanPage
 import funny.buildapp.progress.ui.page.schedule.create.CreateTodoPage
 import funny.buildapp.progress.ui.page.schedule.SchedulePage
-import funny.buildapp.progress.ui.page.daily.TodoPage
+import funny.buildapp.progress.ui.page.todo.TodoPage
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable

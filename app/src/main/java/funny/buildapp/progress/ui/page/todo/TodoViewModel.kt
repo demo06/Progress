@@ -1,4 +1,4 @@
-package funny.buildapp.progress.ui.page.daily
+package funny.buildapp.progress.ui.page.todo
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import funny.buildapp.progress.data.TodoRepository
@@ -37,11 +37,9 @@ class TodoViewModel @Inject constructor(private val todoRepo: TodoRepository) : 
             request = { todoRepo.upsertDaily(daily.copy(state = !daily.state)) },
             onSuccess = {
                 getDailyTodo()
-
             }
         )
     }
-
 }
 
 data class TodoState(
