@@ -17,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.google.accompanist.insets.statusBarsHeight
 import funny.buildapp.progress.ui.route.AppNav
 import funny.buildapp.progress.ui.route.Route
 import funny.buildapp.progress.ui.route.RouteUtils

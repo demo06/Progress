@@ -90,6 +90,7 @@ import funny.buildapp.progress.ui.theme.black1
 import funny.buildapp.progress.ui.theme.grey1
 import funny.buildapp.progress.ui.theme.orange
 import funny.buildapp.progress.ui.theme.orange1
+import funny.buildapp.progress.ui.theme.red1
 import funny.buildapp.progress.ui.theme.themeColor
 import funny.buildapp.progress.ui.theme.white
 
@@ -598,7 +599,7 @@ fun BottomBar(navCtrl: NavHostController) {
                 .height(1.dp)
                 .background(backgroundColor)
         )
-        Row(Modifier.fillMaxWidth()) {
+        Row(Modifier.fillMaxWidth().background(Color.White)) {
             val navBackStackEntry by navCtrl.currentBackStackEntryAsState()
             val currentDestination = navBackStackEntry?.destination
             bottomNavList.forEach { screen ->
@@ -671,7 +672,7 @@ fun TransparentSystemBars() {
             darkIcons = useDarkIcons,
         )
         systemUiController.setNavigationBarColor(
-            color = Color.Transparent,
+            color = Color.White,
             darkIcons = useDarkIcons,
         )
     }

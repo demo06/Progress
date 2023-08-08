@@ -195,10 +195,6 @@ fun AppTheme(
         golden = golden.value
     )
 
-    val systemUiCtrl = rememberSystemUiController()
-    systemUiCtrl.setStatusBarColor(appColors.themeUi)
-    systemUiCtrl.setNavigationBarColor(appColors.themeUi)
-    systemUiCtrl.setSystemBarsColor(appColors.themeUi)
 
     ProvideWindowInsets {
         CompositionLocalProvider(LocalAppColors provides appColors, content = content)
