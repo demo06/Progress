@@ -25,7 +25,7 @@ class PgyerUpload : Plugin<Project> {
                     "${project.buildDir.absolutePath}${File.separator}outputs${File.separator}apk${File.separator}release"
                 val apk = findFile(File(apkPath))
                 apk?.let { uploadApk(it, project) }
-            }.dependsOn("assembleRelease")
+            }
         }
     }
 
