@@ -16,7 +16,7 @@ android {
         minSdk 22
         targetSdk 33
         versionCode 1
-        versionName "1.0"
+        versionName "0.0.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -51,6 +51,41 @@ android {
     packagingOptions {
         resources {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
+    signingConfigs {
+        debug {
+            // No debug config
+            keyAlias 'progress'
+            keyPassword '19930920'
+            storeFile file('../debug.keystore')
+            storePassword '19930920'
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
+
+        release {
+            keyAlias 'progress'
+            keyPassword '19930920'
+            storeFile file('../progress.jks')
+            storePassword '19930920'
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
+        release {
+            minifyEnabled true
+            signingConfig signingConfigs.release
+            applicationVariants.all { variant ->
+                variant.outputs.all {
+                    outputFileName = "progress_v${variant.versionName}.apk"
+                }
+            }
         }
     }
 }
